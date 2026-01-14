@@ -158,16 +158,38 @@ body {
     align-items: center;
 }
 
-.logo {
-    font-family: var(--font-heading);
-    font-size: 1.8rem;
-    font-weight: 800;
+.logo-cursive {
+    font-family: 'Pacifico', cursive;
+    font-size: 2.2rem;
+    font-weight: 400;
+    /* Pacifico is inherently medium-thick */
     color: var(--text-color);
     text-decoration: none;
+    letter-spacing: 1px;
+    display: inline-block;
+    min-width: 120px;
+    /* Prevent layout shift */
 }
 
-.logo span {
+.logo-cursive::after {
+    content: '|';
     color: var(--accent-1);
+    animation: blink 0.7s infinite;
+    font-family: sans-serif;
+    font-weight: 100;
+    margin-left: 2px;
+}
+
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
 }
 
 .nav-links {

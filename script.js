@@ -9,6 +9,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Logo Writing Animation
+    const logoText = "Nikhil";
+    const logoContainer = document.getElementById('logo-text');
+    let charIndex = 0;
+
+    function typeLogo() {
+        if (charIndex < logoText.length) {
+            logoContainer.textContent += logoText.charAt(charIndex);
+            charIndex++;
+            setTimeout(typeLogo, 150); // Speed of writing
+        }
+    }
+
+    if (logoContainer) {
+        typeLogo();
+    }
+
     // Typewriter Effect
     class TypeWriter {
         constructor(txtElement, words, wait = 3000) {
