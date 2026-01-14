@@ -171,27 +171,21 @@ body {
     overflow: visible;
 }
 
-.logo-text-path {
+.logo-text-masked {
     font-family: 'Pacifico', cursive;
     font-size: 38px;
-    fill: transparent;
-    stroke: var(--text-color);
-    stroke-width: 1.2;
-    stroke-dasharray: 400;
-    stroke-dashoffset: 400;
-    animation: drawLogo 2.5s ease-in-out forwards, fillLogo 0.5s ease-in-out 2s forwards;
+    fill: var(--text-color);
 }
 
-@keyframes drawLogo {
+#reveal-path {
+    stroke-dasharray: 600;
+    stroke-dashoffset: 600;
+    animation: writeLogo 3s ease-in-out forwards;
+}
+
+@keyframes writeLogo {
     to {
         stroke-dashoffset: 0;
-    }
-}
-
-@keyframes fillLogo {
-    to {
-        fill: var(--text-color);
-        stroke: transparent;
     }
 }
 

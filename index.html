@@ -33,8 +33,17 @@
     <nav class="navbar">
         <div class="container">
             <a href="#" class="logo-cursive">
-                <svg viewBox="0 0 160 50" class="logo-svg">
-                    <text x="0" y="35" class="logo-text-path">Nikhil</text>
+                <svg viewBox="0 0 160 55" class="logo-svg">
+                    <defs>
+                        <mask id="writing-mask">
+                            <!-- This path roughly follows the cursive strokes of 'Nikhil' to reveal the text -->
+                            <path id="reveal-path"
+                                d="M 10 40 C 15 10, 25 10, 30 40 L 32 40 C 35 25, 45 25, 48 40 L 50 40 C 53 15, 63 15, 68 40 L 70 40 C 73 25, 83 25, 88 40 L 90 40 C 93 15, 103 15, 108 40 L 110 40 C 113 25, 123 25, 128 40 L 130 40 C 133 15, 143 15, 148 40"
+                                fill="none" stroke="white" stroke-width="12" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                        </mask>
+                    </defs>
+                    <text x="0" y="40" class="logo-text-masked" mask="url(#writing-mask)">Nikhil</text>
                 </svg>
             </a>
             <ul class="nav-links">
