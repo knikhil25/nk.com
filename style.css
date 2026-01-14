@@ -159,36 +159,39 @@ body {
 }
 
 .logo-cursive {
-    font-family: 'Pacifico', cursive;
-    font-size: 2.2rem;
-    font-weight: 400;
-    /* Pacifico is inherently medium-thick */
-    color: var(--text-color);
     text-decoration: none;
-    letter-spacing: 1px;
-    display: inline-block;
-    min-width: 120px;
-    /* Prevent layout shift */
+    display: block;
+    width: 160px;
+    height: 50px;
 }
 
-.logo-cursive::after {
-    content: '|';
-    color: var(--accent-1);
-    animation: blink 0.7s infinite;
-    font-family: sans-serif;
-    font-weight: 100;
-    margin-left: 2px;
+.logo-svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
 }
 
-@keyframes blink {
+.logo-text-path {
+    font-family: 'Pacifico', cursive;
+    font-size: 38px;
+    fill: transparent;
+    stroke: var(--text-color);
+    stroke-width: 1.2;
+    stroke-dasharray: 400;
+    stroke-dashoffset: 400;
+    animation: drawLogo 2.5s ease-in-out forwards, fillLogo 0.5s ease-in-out 2s forwards;
+}
 
-    0%,
-    100% {
-        opacity: 1;
+@keyframes drawLogo {
+    to {
+        stroke-dashoffset: 0;
     }
+}
 
-    50% {
-        opacity: 0;
+@keyframes fillLogo {
+    to {
+        fill: var(--text-color);
+        stroke: transparent;
     }
 }
 
