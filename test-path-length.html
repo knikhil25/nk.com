@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Path Length Test</title>
+</head>
+
+<body>
+    <svg viewBox="0 0 150 40">
+        <path id="testPath"
+            d="M5,25 Q10,15 15,25 Q20,35 25,25 Q30,15 35,25 Q40,30 45,25 Q50,20 55,25 Q60,30 65,25 Q70,15 75,25 Q80,30 85,25 Q90,20 95,25 Q100,15 105,25 Q110,30 115,25 Q120,20 125,25 Q130,30 135,25 Q140,20 145,25"
+            fill="none" stroke="red" stroke-width="2" />
+    </svg>
+    <script>
+        const path = document.getElementById('testPath');
+        const length = path.getTotalLength();
+        console.log('Path length:', length);
+        document.body.innerHTML += '<h1>Path Length: ' + length + 'px</h1>';
+    </script>
+</body>
+
+</html>
