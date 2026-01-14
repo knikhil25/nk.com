@@ -36,9 +36,11 @@
                 <svg viewBox="0 0 160 55" class="logo-svg">
                     <defs>
                         <mask id="writing-mask">
-                            <!-- A simpler, very thick path to sweep across the text area -->
-                            <path id="reveal-path" d="M 0 27 L 160 27" fill="none" stroke="white" stroke-width="60"
-                                stroke-linecap="round" />
+                            <!-- A zig-zag path that follows the vertical flow of the cursive -->
+                            <path id="reveal-path"
+                                d="M 0 40 L 10 10 L 20 40 L 30 10 L 40 40 L 50 10 L 60 40 L 70 10 L 80 40 L 90 10 L 100 40 L 110 10 L 120 40 L 130 10 L 140 40 L 150 10 L 160 40"
+                                fill="none" stroke="white" stroke-width="35" stroke-linecap="round"
+                                stroke-linejoin="round" />
                             <!-- A final rect to guarantee 100% visibility at the end -->
                             <rect id="full-reveal-rect" x="0" y="0" width="160" height="55" fill="white"
                                 style="opacity: 0;" />
