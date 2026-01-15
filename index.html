@@ -209,7 +209,7 @@
         </section>
     </main>
 
-    <footer>
+    <footer style="position: relative; z-index: 100;">
         <div class="container">
             <div class="social-links">
                 <a href="https://github.com/knikhil25" target="_blank" rel="noopener noreferrer"><i
@@ -219,9 +219,9 @@
             </div>
             <p>&copy; 2026 Nikhil. Built with cardboard, brains, and many help from Antigravity.</p>
             <div class="privacy-links">
-                <a href="#" onclick="openCookieModal(); return false;" id="manageCookiesLink">Manage Cookies</a>
+                <a href="javascript:void(0)" onclick="openCookieModal()" id="manageCookiesLink">Manage Cookies</a>
                 <span>|</span>
-                <a href="#" onclick="openPrivacyModal(); return false;" id="privacyInfoLink">Don't Share My Personal
+                <a href="javascript:void(0)" onclick="openPrivacyModal()" id="privacyInfoLink">Don't Share My Personal
                     Information</a>
             </div>
         </div>
@@ -245,7 +245,46 @@
         </div>
     </div>
 
-    <script src="script.js?v=1.3"></script>
+    <script src="script.js?v=1.4"></script>
+    <script>
+        // Direct handling of modals to bypass any external script issues
+        function openCookieModal() {
+            const modal = document.getElementById('cookieModal');
+            if (modal) {
+                modal.style.display = 'flex';
+                console.log('Cookie modal opened');
+            } else {
+                console.error('Cookie modal not found');
+            }
+        }
+
+        function openPrivacyModal() {
+            const modal = document.getElementById('privacyModal');
+            if (modal) {
+                modal.style.display = 'flex';
+                console.log('Privacy modal opened');
+            } else {
+                console.error('Privacy modal not found');
+            }
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) modal.style.display = 'none';
+        }
+
+        // Close when clicking outside
+        window.onclick = function (event) {
+            const cookieModal = document.getElementById('cookieModal');
+            const privacyModal = document.getElementById('privacyModal');
+            if (event.target == cookieModal) {
+                cookieModal.style.display = "none";
+            }
+            if (event.target == privacyModal) {
+                privacyModal.style.display = "none";
+            }
+        }
+    </script>
 </body>
 
 </html>
