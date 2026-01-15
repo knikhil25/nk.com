@@ -219,9 +219,10 @@
             </div>
             <p>&copy; 2026 Nikhil. Built with cardboard, brains, and many help from Antigravity.</p>
             <div class="privacy-links">
-                <a href="#" id="manageCookiesLink">Manage Cookies</a>
+                <a href="#" onclick="openCookieModal(); return false;" id="manageCookiesLink">Manage Cookies</a>
                 <span>|</span>
-                <a href="#" id="privacyInfoLink">Don't Share My Personal Information</a>
+                <a href="#" onclick="openPrivacyModal(); return false;" id="privacyInfoLink">Don't Share My Personal
+                    Information</a>
             </div>
         </div>
     </footer>
@@ -229,7 +230,7 @@
     <!-- Cookie Modal -->
     <div id="cookieModal" class="modal">
         <div class="modal-content">
-            <span class="close" data-modal="cookieModal">&times;</span>
+            <span class="close" onclick="closeModal('cookieModal')">&times;</span>
             <h2>Manage Cookies</h2>
             <p>Decide for yourself!! In my home, I eat a cookie per day. I recommend the same.</p>
         </div>
@@ -238,13 +239,13 @@
     <!-- Privacy Info Modal -->
     <div id="privacyModal" class="modal">
         <div class="modal-content">
-            <span class="close" data-modal="privacyModal">&times;</span>
+            <span class="close" onclick="closeModal('privacyModal')">&times;</span>
             <h2>Don't share my personal info</h2>
             <p>Why would I! First of all, I don't have any. Second of all, if I did, what would I do with it?</p>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="script.js?v=1.3"></script>
 </body>
 
 </html>

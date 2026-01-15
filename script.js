@@ -157,3 +157,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+// Global functions for inline HTML calls (Backup method)
+window.openCookieModal = function () {
+    const modal = document.getElementById('cookieModal');
+    if (modal) modal.style.display = 'flex';
+    return false;
+}
+
+window.openPrivacyModal = function () {
+    const modal = document.getElementById('privacyModal');
+    if (modal) modal.style.display = 'flex';
+    return false;
+}
+
+window.closeModal = function (modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) modal.style.display = 'none';
+}
