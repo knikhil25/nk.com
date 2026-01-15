@@ -116,23 +116,34 @@ document.addEventListener('DOMContentLoaded', () => {
     const privacyInfoLink = document.getElementById('privacyInfoLink');
     const closeButtons = document.querySelectorAll('.close');
 
+    console.log('Modal elements found:', { cookieModal, privacyModal, manageCookiesLink, privacyInfoLink });
+
     // Open cookie modal
-    manageCookiesLink.addEventListener('click', (e) => {
-        e.preventDefault();
-        cookieModal.style.display = 'flex';
-    });
+    if (manageCookiesLink && cookieModal) {
+        manageCookiesLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            console.log('Opening Cookie Modal');
+            cookieModal.style.display = 'flex';
+        });
+    }
 
     // Open privacy modal
-    privacyInfoLink.addEventListener('click', (e) => {
-        e.preventDefault();
-        privacyModal.style.display = 'flex';
-    });
+    if (privacyInfoLink && privacyModal) {
+        privacyInfoLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            console.log('Opening Privacy Modal');
+            privacyModal.style.display = 'flex';
+        });
+    }
 
     // Close modals when clicking X
     closeButtons.forEach(button => {
         button.addEventListener('click', () => {
             const modalId = button.getAttribute('data-modal');
-            document.getElementById(modalId).style.display = 'none';
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.style.display = 'none';
+            }
         });
     });
 
