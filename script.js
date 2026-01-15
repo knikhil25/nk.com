@@ -108,4 +108,41 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    // Modal Functionality
+    const cookieModal = document.getElementById('cookieModal');
+    const privacyModal = document.getElementById('privacyModal');
+    const manageCookiesLink = document.getElementById('manageCookiesLink');
+    const privacyInfoLink = document.getElementById('privacyInfoLink');
+    const closeButtons = document.querySelectorAll('.close');
+
+    // Open cookie modal
+    manageCookiesLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        cookieModal.style.display = 'flex';
+    });
+
+    // Open privacy modal
+    privacyInfoLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        privacyModal.style.display = 'flex';
+    });
+
+    // Close modals when clicking X
+    closeButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const modalId = button.getAttribute('data-modal');
+            document.getElementById(modalId).style.display = 'none';
+        });
+    });
+
+    // Close modals when clicking outside
+    window.addEventListener('click', (e) => {
+        if (e.target === cookieModal) {
+            cookieModal.style.display = 'none';
+        }
+        if (e.target === privacyModal) {
+            privacyModal.style.display = 'none';
+        }
+    });
 });
