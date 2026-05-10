@@ -4,303 +4,1595 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nikhil | Tech Enthusiast</title>
-    <meta name="description"
-        content="Personal portfolio of Nikhil, a Tech Enthusiast specializing in building modern web experiences.">
-
-    <!-- Fonts -->
+    <title>Nikhil Kannankara</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Outfit:wght@400;700&family=Sacramento&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap"
         rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        :root {
+            --orange: #FF6B35;
+            --blue: #3B82F6;
+            --green: #10B981;
+            --yellow: #FBBF24;
+            --red: #EF4444;
+            --white: #FFFEF9;
+            --off-white: #F5F3EE;
+            --charcoal: #1A1A2E;
+            --mid: #6B7280;
+        }
 
-    <!-- Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+        html {
+            scroll-behavior: smooth;
+        }
 
-    <link rel="stylesheet" href="style.css?v=1.2">
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--white);
+            color: var(--charcoal);
+            overflow-x: hidden;
+        }
+
+        /* ── INTRO ── */
+        #intro {
+            position: fixed;
+            inset: 0;
+            background: var(--white);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        #intro.hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.96);
+        }
+
+        #cube-canvas {
+            width: 380px;
+            height: 380px;
+            cursor: grab;
+            touch-action: none;
+        }
+
+        #cube-canvas:active {
+            cursor: grabbing;
+        }
+
+        .intro-label {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--mid);
+            margin-bottom: 1rem;
+        }
+
+        #solve-btn {
+            position: absolute;
+            right: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 14px 40px;
+            background: var(--charcoal);
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            transition: transform 0.15s, background 0.2s;
+            overflow: hidden;
+            z-index: 1001;
+        }
+
+        #solve-btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--orange);
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            z-index: 0;
+        }
+
+        #solve-btn:hover::after {
+            transform: translateX(0);
+        }
+
+        #solve-btn span {
+            position: relative;
+            z-index: 1;
+        }
+
+        #solve-btn:active {
+            transform: translateY(-50%) scale(0.97);
+        }
+
+        #solve-btn:disabled {
+            opacity: 0.5;
+            cursor: default;
+        }
+
+        #pattern-menu {
+            position: absolute;
+            left: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 1001;
+        }
+
+        .pattern-btn {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid var(--charcoal);
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--charcoal);
+            text-align: left;
+        }
+
+        .pattern-btn:hover {
+            background: var(--charcoal);
+            color: var(--white);
+        }
+
+        .color-switch-wrap {
+            margin-top: 4px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--charcoal);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 2px solid var(--charcoal);
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .color-switch-wrap label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            #pattern-menu {
+                left: 50%;
+                top: auto;
+                bottom: 80px;
+                transform: translateX(-50%);
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            #solve-btn {
+                right: 50%;
+                top: auto;
+                bottom: 20px;
+                transform: translateX(50%);
+            }
+
+            #solve-btn:active {
+                transform: translateX(50%) scale(0.97);
+            }
+        }
+
+        /* ── MINI CUBE (corner) ── */
+        #mini-cube-wrap {
+            position: fixed;
+            top: 18px;
+            left: 18px;
+            width: 64px;
+            height: 64px;
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 0.5s, transform 0.3s ease;
+            pointer-events: none;
+        }
+
+        #mini-cube-wrap.cube-hidden {
+            transform: translateY(-250%);
+            opacity: 0 !important;
+            pointer-events: none;
+        }
+
+        #mini-cube-wrap.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        #mini-canvas {
+            width: 64px;
+            height: 64px;
+            border-radius: 12px;
+        }
+
+        /* ── NAV ── */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 20px 48px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 32px;
+            z-index: 400;
+            opacity: 0;
+            transition: opacity 0.5s 0.2s, transform 0.3s ease;
+        }
+
+        nav.nav-hidden {
+            transform: translateY(-100%);
+            opacity: 0 !important;
+            pointer-events: none;
+        }
+
+        nav.visible {
+            opacity: 1;
+        }
+
+        nav a {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--charcoal);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        nav a:hover {
+            color: var(--orange);
+        }
+
+        /* ── MAIN CONTENT ── */
+        #main-content {
+            opacity: 0;
+            transition: opacity 0.8s 0.4s;
+            position: relative;
+            z-index: 10;
+        }
+
+        #main-content.visible {
+            opacity: 1;
+        }
+
+        /* ── HERO ── */
+        #hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 120px 80px 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--yellow);
+            border: 1.5px solid var(--yellow);
+            border-radius: 50px;
+            padding: 6px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--charcoal);
+            margin-bottom: 28px;
+        }
+
+        .hero-tag .dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--orange);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1)
+            }
+
+            50% {
+                opacity: 0.5;
+                transform: scale(1.4)
+            }
+        }
+
+        h1.hero-name {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(52px, 7vw, 96px);
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: -0.03em;
+            color: var(--charcoal);
+            margin-bottom: 8px;
+        }
+
+        h1.hero-name .accent {
+            color: var(--orange);
+        }
+
+        .hero-sub {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(18px, 2.5vw, 28px);
+            font-weight: 600;
+            color: var(--mid);
+            margin-bottom: 28px;
+        }
+
+        .hero-desc {
+            max-width: 520px;
+            font-size: 17px;
+            line-height: 1.75;
+            color: #4B5563;
+            margin-bottom: 40px;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            padding: 14px 32px;
+            background: var(--orange);
+            color: #fff;
+            border-radius: 50px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: transform 0.15s, box-shadow 0.15s;
+            display: inline-block;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255, 107, 53, 0.35);
+        }
+
+        .btn-outline {
+            padding: 14px 32px;
+            border: 2px solid var(--charcoal);
+            color: var(--charcoal);
+            border-radius: 50px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: background 0.2s, color 0.2s;
+            display: inline-block;
+        }
+
+        .btn-outline:hover {
+            background: var(--charcoal);
+            color: #fff;
+        }
+
+        /* Floating color blobs */
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.12;
+            filter: blur(80px);
+            pointer-events: none;
+        }
+
+        .blob-1 {
+            width: 400px;
+            height: 400px;
+            background: var(--yellow);
+            top: -100px;
+            right: -80px;
+        }
+
+        .blob-2 {
+            width: 300px;
+            height: 300px;
+            background: var(--yellow);
+            bottom: 20px;
+            right: 200px;
+        }
+
+        .blob-3 {
+            width: 250px;
+            height: 250px;
+            background: var(--yellow);
+            bottom: -80px;
+            left: 200px;
+        }
+
+        .hero-sketch {
+            position: absolute;
+            right: 12vw;
+            top: 50%;
+            transform: translateY(-50%);
+            width: clamp(300px, 42vw, 650px);
+            border-radius: 32px;
+            z-index: 5;
+            pointer-events: none;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        .floating-cube {
+            position: absolute;
+            border-radius: 12px;
+            z-index: 6;
+            animation: float 6s ease-in-out infinite;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .cube-pos-1 {
+            width: 100px;
+            right: 6vw;
+            top: 15%;
+            z-index: 4;
+            animation-delay: 0s;
+        }
+
+        .cube-pos-2 {
+            width: 130px;
+            right: 48vw;
+            bottom: 12%;
+            z-index: 6;
+            animation-delay: -3s;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-15px) rotate(5deg);
+            }
+
+            100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .hero-sketch {
+                right: 40px;
+                width: 35vw;
+            }
+        }
+
+        /* ── STATS STRIP ── */
+        .stats-strip {
+            display: flex;
+            gap: 0;
+            border-top: 2px solid #E5E7EB;
+            border-bottom: 2px solid #E5E7EB;
+            margin: 0 80px;
+            overflow: hidden;
+        }
+
+        .stat-card {
+            flex: 1;
+            padding: 28px 32px;
+            border-right: 2px solid #E5E7EB;
+            position: relative;
+            overflow: hidden;
+            transition: background 0.2s;
+        }
+
+        .stat-card:last-child {
+            border-right: none;
+        }
+
+        .stat-card:hover {
+            background: var(--off-white);
+        }
+
+        .stat-num {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 40px;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            color: var(--charcoal);
+            display: block;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .stat-num span {
+            color: var(--orange);
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--mid);
+            font-weight: 500;
+        }
+
+        /* ── SECTIONS ── */
+        section {
+            padding: 100px 80px;
+        }
+
+        .section-eyebrow {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--orange);
+            margin-bottom: 12px;
+        }
+
+        h2.section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(32px, 4vw, 52px);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            color: var(--charcoal);
+            line-height: 1.08;
+            margin-bottom: 48px;
+            max-width: 600px;
+        }
+
+        /* ── ABOUT ── */
+        #about {
+            background: var(--off-white);
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 64px;
+            align-items: start;
+        }
+
+        .about-text p {
+            font-size: 17px;
+            line-height: 1.8;
+            color: #374151;
+            margin-bottom: 20px;
+        }
+
+        .about-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 24px;
+        }
+
+        .chip {
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .chip-orange {
+            background: #FFF0EB;
+            color: #C2410C;
+            border: 1.5px solid #FDBA74;
+        }
+
+        .chip-blue {
+            background: #EFF6FF;
+            color: #1D4ED8;
+            border: 1.5px solid #93C5FD;
+        }
+
+        .chip-green {
+            background: #ECFDF5;
+            color: #065F46;
+            border: 1.5px solid #6EE7B7;
+        }
+
+        .chip-yellow {
+            background: var(--yellow);
+            color: var(--charcoal);
+            border: 1.5px solid var(--yellow);
+        }
+
+        .chip-pink {
+            background: #FDF2F8;
+            color: #9D174D;
+            border: 1.5px solid #F9A8D4;
+        }
+
+        .about-extras {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .extra-card {
+            background: #fff;
+            border: 2px solid #E5E7EB;
+            border-radius: 20px;
+            padding: 24px 28px;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+
+        .extra-card:hover {
+            border-color: var(--orange);
+            transform: translateX(4px);
+        }
+
+        .extra-icon {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .extra-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 6px;
+        }
+
+        .extra-desc {
+            font-size: 14px;
+            color: var(--mid);
+            line-height: 1.6;
+        }
+
+        /* ── PROJECTS ── */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 28px;
+        }
+
+        .project-card {
+            background: #fff;
+            border: 2px solid #E5E7EB;
+            border-radius: 24px;
+            padding: 32px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+            cursor: default;
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .project-card.orange::before {
+            background: var(--orange);
+        }
+
+        .project-card.blue::before {
+            background: var(--blue);
+        }
+
+        .project-card.green::before {
+            background: var(--green);
+        }
+
+        .project-card.yellow::before {
+            background: var(--yellow);
+        }
+
+        .project-card.pink::before {
+            background: #EC4899;
+        }
+
+        .project-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.1);
+            border-color: transparent;
+        }
+
+        .project-emoji {
+            font-size: 36px;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .project-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .project-desc {
+            font-size: 14px;
+            color: var(--mid);
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
+        .project-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .tag {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 50px;
+            background: var(--off-white);
+            color: var(--mid);
+            border: 1px solid #E5E7EB;
+        }
+
+        /* ── CUBING ── */
+        #cubing {
+            background: var(--charcoal);
+            color: #fff;
+        }
+
+        #cubing .section-eyebrow {
+            color: var(--yellow);
+        }
+
+        #cubing h2.section-title {
+            color: #fff;
+        }
+
+        .cubing-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .result-card {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1.5px solid rgba(255, 255, 255, 0.12);
+            border-radius: 20px;
+            padding: 28px;
+            transition: background 0.2s;
+        }
+
+        .result-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .result-event {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--yellow);
+            margin-bottom: 16px;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .result-row .label {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .result-row .value {
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .result-row .value.highlight {
+            color: var(--orange);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .wca-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--orange);
+            color: #fff;
+            border-radius: 50px;
+            padding: 8px 20px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            margin-top: 32px;
+            text-decoration: none;
+            transition: transform 0.15s;
+        }
+
+        .wca-badge:hover {
+            transform: translateY(-2px);
+        }
+
+        /* ── CONTACT ── */
+        #contact {
+            background: var(--off-white);
+        }
+
+        .contact-box {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .contact-box .section-eyebrow {
+            text-align: center;
+        }
+
+        .contact-box h2.section-title {
+            margin: 0 auto 20px;
+            text-align: center;
+        }
+
+        .contact-box p {
+            font-size: 17px;
+            color: var(--mid);
+            margin-bottom: 40px;
+            line-height: 1.7;
+        }
+
+        .contact-links {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        /* ── FOOTER ── */
+        footer {
+            padding: 32px 80px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 2px solid #E5E7EB;
+            font-size: 13px;
+            color: var(--mid);
+        }
+
+        footer strong {
+            color: var(--charcoal);
+            font-weight: 600;
+        }
+
+        /* ── SCROLL ANIMATIONS ── */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+
+        .reveal.in-view {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+
+            #hero,
+            section,
+            footer {
+                padding-left: 24px;
+                padding-right: 24px;
+            }
+
+            .stats-strip {
+                margin: 0 24px;
+                flex-direction: column;
+            }
+
+            .hero-sketch,
+            .floating-cube {
+                display: none;
+            }
+
+            .stat-card {
+                border-right: none;
+                border-bottom: 2px solid #E5E7EB;
+            }
+
+            .about-grid,
+            .cubing-grid {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+
+            h1.hero-name {
+                font-size: 48px;
+            }
+        }
+    </style>
 </head>
 
 <body>
-    <div class="cursor"></div>
-    <div class="bg-shapes">
-        <div class="shape shape-1"></div>
-        <div class="shape shape-2"></div>
-        <div class="shape shape-3"></div>
-    </div>
 
-    <nav class="navbar">
-        <div class="container">
-            <a href="#" class="logo">
-                <span class="logo-text-animated">Nikhil</span>
-            </a>
-            <ul class="nav-links">
-                <li><a href="#home">Home</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#skills">Skills</a></li>
-                <li><a href="#projects">Projects</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-            <div class="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
+    <!-- INTRO OVERLAY -->
+    <div id="intro">
+        <div class="intro-label">Drag to rotate · tap to solve</div>
+        <canvas id="cube-canvas"></canvas>
+        <button id="solve-btn"><span>✨ Press to solve</span></button>
+
+        <div id="pattern-menu">
+            <button class="pattern-btn" data-pattern="checkerboard">Checkerboard</button>
+            <button class="pattern-btn" data-pattern="cubeincube">Cube in a Cube in a Cube</button>
+            <button class="pattern-btn" data-pattern="scramble">Random</button>
+            <div class="color-switch-wrap">
+                <label>
+                    <input type="checkbox" id="macaron-switch">
+                    Macaron Colors
+                </label>
             </div>
         </div>
+    </div>
+
+    <!-- MINI CUBE CORNER -->
+    <div id="mini-cube-wrap">
+        <canvas id="mini-canvas"></canvas>
+    </div>
+
+    <!-- NAV -->
+    <nav id="nav">
+        <a href="#about">About</a>
+        <a href="#projects">Projects</a>
+        <a href="#cubing">Cubing</a>
+        <a href="#contact">Contact</a>
     </nav>
 
-    <main>
-        <!-- Hero Section -->
-        <section id="home" class="hero">
-            <div class="container">
-                <div class="hero-content">
-                    <div class="profile-container">
-                        <div class="glow-ring"></div>
-                        <img src="assets/niku.png" alt="qqq" class="profile-img">
-                        <div class="accent-dots"></div>
-                    </div>
-                    <div class="hero-text">
-                        <h1 class="reveal">Nikhil K.</h1>
-                        <h2 class="role reveal"><span class="typewriter"
-                                data-words='["Science Lover", "Tech Experimenter", "Inclusive Collaborator"]'></span>
-                        </h2>
-                        Building your future using code and other stuff (e.g. cardboard and brains).</p>
-                        <div class="hero-btns reveal">
-                            <a href="#projects" class="btn btn-primary">Witness My Creations</a>
-                            <a href="#contact" class="btn btn-secondary">Send Help (or an Email)</a>
-                        </div>
-                    </div>
-                </div>
+    <!-- MAIN CONTENT -->
+    <div id="main-content">
+
+        <section id="hero">
+            <div class="blob blob-1"></div>
+            <div class="blob blob-2"></div>
+            <div class="blob blob-3"></div>
+            <img src="assets/hero-sketch.png" alt="Nikhil Sketch" class="hero-sketch">
+            <img src="assets/cube-2x2.jpg" alt="2x2 Cube" class="floating-cube cube-pos-1">
+            <img src="assets/cube-skewb.jpg" alt="Skewb Cube" class="floating-cube cube-pos-2">
+            <div class="hero-tag"><span class="dot"></span> Based in Cupertino, CA</div>
+            <h1 class="hero-name">Nikhil<br><span class="accent">Kannankara</span></h1>
+            <p class="hero-sub">Builder · Maker · Speed Cuber</p>
+            <p class="hero-desc">
+                Middle schooler passionate about robotics, electronics, and building things that think.
+                From Rubik's cube solving robots to plant personality sensors — I make ideas real.
+            </p>
+            <div class="hero-cta">
+                <a href="#projects" class="btn-primary">See My Work</a>
+                <a href="#cubing" class="btn-outline">WCA Results</a>
             </div>
         </section>
 
-        <!-- About Section -->
-        <section id="about" class="about">
-            <div class="container">
-                <h2 class="section-title">About Me</h2>
-                <div class="about-grid">
-                    <div class="about-text">
-                        <p>I’m a funny, curious human whose sense of humor sometimes goes into overdrive—and I love
-                            solving problems. That could mean solving a Rubik’s Cube, debugging my code, or convincing
-                            myself I’ll win the next Mario Kart 8 Deluxe race (spoiler: sometimes I actually do). I can
-                            code on my own, but I also enjoy teaming up with AI platforms like Antigravity, because
-                            coding with AI feels like having a superpower… or at least a very smart sidekick who never
-                            gets tired.</p> <br>
-                        <p>When I’m not coding or gaming, I’m probably thinking about cars. I love how they look, how
-                            they
-                            work, and why they’re so cool, even when I’m just reading about them. Speaking of reading, I
-                            love
-                            books. Give me a good story or an interesting topic, and I’ll happily disappear into it for
-                            hours.</p><br>
-                        <p>Art is also part of my life. I enjoy origami, crafting, and turning random ideas into
-                            something creative and fun. Overall, I love learning, creating, and having fun while doing
-                            it.
-                            If there’s a challenge, a game, or a cool idea involved, I’m probably interested and already
-                            thinking about how to make it better.</p><br>
-                        <p>Contact me using my email at the bottom of the page if you want me to work on a project. (JK.
-                            I
-                            am not even in middle school!)</p>
-                    </div>
-                </div>
+        <!-- STATS STRIP -->
+        <div class="stats-strip reveal">
+            <div class="stat-card">
+                <span class="stat-num">33<span>.</span>44<span style="font-size:20px;color:var(--mid)">s</span></span>
+                <span class="stat-label">3×3 Personal Best</span>
             </div>
-        </section>
-
-        <!-- Skills Section -->
-        <section id="skills" class="skills">
-            <div class="container">
-                <h2 class="section-title">Skills</h2>
-                <div class="skills-grid">
-                    <div class="skill-tag">Python (A digital snake that does my homework)</div>
-                    <div class="skill-tag">Go (Gopher-powered speed that's faster than a 200cc race)</div>
-                    <div class="skill-tag">Google Colabs (Borrowing Google's brains because mine is on Mario Kart)</div>
-                    <div class="skill-tag">Rubik's Cube Speedrunning</div>
-                    <div class="skill-tag">Mario Kart 8 Deluxe Strategy</div>
-                    <div class="skill-tag">Cardboard Architecture</div>
-                    <div class="skill-tag">AI Sidekick Management</div>
-                    <div class="skill-tag">Inclusive Collaborating</div>
-                </div>
+            <div class="stat-card">
+                <span class="stat-num">8<span>.</span>43<span style="font-size:20px;color:var(--mid)">s</span></span>
+                <span class="stat-label">2×2 Personal Best</span>
             </div>
-        </section>
-
-        <!-- Projects Section -->
-        <section id="projects" class="projects">
-            <div class="container">
-                <h2 class="section-title">Selected Projects</h2>
-                <div class="projects-grid">
-                    <!-- Project 1: StyleMatch AI -->
-                    <a href="https://github.com/knikhil25/clothes-python" target="_blank" class="project-link">
-                        <div class="project-card reveal">
-                            <div class="project-content">
-                                <h3>StyleMatch AI</h3>
-                                <p>An AI fashion sidekick that matches your clothes using Ollama (because even AI knows
-                                    I
-                                    look good).</p>
-                                <div class="project-tags">
-                                    <span>Python</span>
-                                    <span>Ollama</span>
-                                    <span>AI</span>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-
-                    <!-- Project 2: Solar System -->
-                    <a href="https://github.com/knikhil25/solarsystem" target="_blank" class="project-link">
-                        <div class="project-card reveal">
-                            <div class="project-content">
-                                <h3>Interactive Solar System</h3>
-                                <p>A 3D solar system with real-time feedback. Basically, I'm playing around with
-                                    planets.
-                                    Don't worry, no real planets were harmed!</p>
-                                <div class="project-tags">
-                                    <span>Three.js</span>
-                                    <span>WebGL</span>
-                                    <span>JavaScript</span>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-
-                    <!-- Project 3: YOLOv8 Real-Time Vision -->
-                    <a href="https://github.com/knikhil25/basic_object_detection" target="_blank" class="project-link">
-                        <div class="project-card reveal">
-                            <div class="project-content">
-                                <h3>YOLOv8 Real-Time Vision</h3>
-                                <p>Teaching my computer to see objects in real-time. It's like having robot eyes!</p>
-                                <div class="project-tags">
-                                    <span>OpenCV</span>
-                                    <span>YOLOv8</span>
-                                    <span>AI Vision</span>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    <!-- Project 4: Star Collector -->
-                    <a href="https://github.com/knikhil25/python_game" target="_blank" class="project-link">
-                        <div class="project-card reveal">
-                            <div class="project-content">
-                                <h3>Star Collector Arcade</h3>
-                                <p>A high-stakes race to collect stars while avoiding everything that wants to stop me.
-                                </p>
-                                <div class="project-tags">
-                                    <span>Python</span>
-                                    <span>Pygame</span>
-                                    <span>Arcade</span>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    <!-- Project 5: GenQuiz AI -->
-                    <a href="https://github.com/knikhil25/quiz_python" target="_blank" class="project-link">
-                        <div class="project-card reveal">
-                            <div class="project-content">
-                                <h3>GenQuiz AI</h3>
-                                <p>A quiz that generates questions on the fly using Ollama. A test your computer creates
-                                    for
-                                    you!</p>
-                                <div class="project-tags">
-                                    <span>Tkinter</span>
-                                    <span>Ollama</span>
-                                    <span>AI</span>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
+            <div class="stat-card">
+                <span class="stat-num"><span style="font-size:28px">4+</span></span>
+                <span class="stat-label">Robotics Builds</span>
             </div>
-        </section>
-
-        <!-- Contact Section -->
-        <section id="contact" class="contact">
-            <div class="container">
-                <h2 class="section-title">Don't Be a Stranger</h2>
-                <div class="contact-content">
-                    <p>Want to talk about cars, Rubik's cubes, or why my code is doing that weird thing again? Drop a
-                        line!</p>
-                    <p class="contact-email">Coming soon!</p>
-                    <p>If urgent, message me on <a href="https://github.com/knikhil25" target="_blank"
-                            rel="noopener noreferrer">GitHub</a></p>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <footer style="position: relative; z-index: 100;">
-        <div class="container">
-            <div class="social-links">
-                <a href="https://github.com/knikhil25" target="_blank" rel="noopener noreferrer"><i
-                        class="fab fa-github"></i> GitHub</a>
-                <a href="#"><i class="fab fa-linkedin"></i> LinkedIn</a>
-                <a href="#"><i class="fab fa-x-twitter"></i> Twitter/X</a>
-            </div>
-            <p>&copy; 2026 Nikhil. Built with cardboard, brains, and many help from Antigravity.</p>
-            <div class="privacy-links">
-                <a href="javascript:void(0)" onclick="openCookieModal()" id="manageCookiesLink">Manage Cookies</a>
-                <span>|</span>
-                <a href="javascript:void(0)" onclick="openPrivacyModal()" id="privacyInfoLink">Don't Share My Personal
-                    Information</a>
+            <div class="stat-card">
+                <span class="stat-num"><span style="font-size:28px">20+</span></span>
+                <span class="stat-label">Junior Ranger Badges</span>
             </div>
         </div>
-    </footer>
 
-    <!-- Cookie Modal -->
-    <div id="cookieModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('cookieModal')">&times;</span>
-            <h2>Manage Cookies</h2>
-            <p>Decide for yourself!! In my home, I eat a cookie per day. I recommend the same.</p>
-        </div>
+        <!-- ABOUT -->
+        <section id="about">
+            <div class="section-eyebrow">Who I Am</div>
+            <h2 class="section-title">Curious builder, always making something.</h2>
+            <div class="about-grid">
+                <div class="about-text reveal">
+                    <p>
+                        Hey! I'm Nikhil — a student in Cupertino who spends way too much time in the garage
+                        soldering things, 3D printing parts, and writing code. My favorite question is
+                        "what if I built that myself?"
+                    </p>
+                    <p>
+                        I love robotics (Arduino + Raspberry Pi are basically my best friends), speed cubing,
+                        National Park Junior Ranger badges, and figuring out how everything works under the hood.
+                    </p>
+                    <div class="about-chips">
+                        <span class="chip chip-orange">Arduino / Raspberry Pi</span>
+                        <span class="chip chip-blue">Python & C++</span>
+                        <span class="chip chip-green">3D Printing (PLA+)</span>
+                        <span class="chip chip-yellow">OpenCV</span>
+                        <span class="chip chip-pink">Speed Cubing</span>
+                        <span class="chip chip-blue">Math Olympiad</span>
+                        <span class="chip chip-orange">Drums</span>
+                        <span class="chip chip-green">Junior Ranger</span>
+                    </div>
+                </div>
+                <div class="about-extras reveal">
+                    <div class="extra-card">
+                        <div class="extra-icon">🥁</div>
+                        <div class="extra-title">Drummer</div>
+                        <div class="extra-desc">Playing drums since forever. Rhythm is everywhere — in music, code
+                            loops, and solve algorithms.</div>
+                    </div>
+                    <div class="extra-card">
+                        <div class="extra-icon">🏕️</div>
+                        <div class="extra-title">Junior Ranger</div>
+                        <div class="extra-desc">Collecting NPS Junior Ranger badges across the country — Crater Lake,
+                            Appomattox, Bering Land Bridge, and more.</div>
+                    </div>
+                    <div class="extra-card">
+                        <div class="extra-icon">🧮</div>
+                        <div class="extra-title">Math Olympiad</div>
+                        <div class="extra-desc">Competing in Math Olympiad and loving every puzzle. The harder the
+                            problem, the better.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PROJECTS -->
+        <section id="projects">
+            <div class="section-eyebrow">What I've Built</div>
+            <h2 class="section-title">Projects that got out of hand (in the best way).</h2>
+            <div class="projects-grid">
+                <div class="project-card orange reveal">
+                    <span class="project-emoji">🤖</span>
+                    <div class="project-title">Rubik's Cube Solving Robot</div>
+                    <div class="project-desc">
+                        A robot that reads a scrambled cube with a webcam using OpenCV and then
+                        physically solves it using 28BYJ-48 stepper motors driven by an Arduino Mega.
+                        Frame designed in CAD and 3D printed in PLA+.
+                    </div>
+                    <div class="project-tags">
+                        <span class="tag">Arduino Mega</span>
+                        <span class="tag">OpenCV</span>
+                        <span class="tag">Python</span>
+                        <span class="tag">3D Printing</span>
+                        <span class="tag">Stepper Motors</span>
+                    </div>
+                </div>
+                <div class="project-card green reveal">
+                    <span class="project-emoji">🌿</span>
+                    <div class="project-title">Dracaena Bot / Basil Bot</div>
+                    <div class="project-desc">
+                        Science fair project giving a plant "emotions." Uses a capacitive touch sensor
+                        and soil moisture sensor to detect interactions, displaying feelings on an LCD.
+                        The plant literally tells you when it's thirsty.
+                    </div>
+                    <div class="project-tags">
+                        <span class="tag">Arduino</span>
+                        <span class="tag">LCD Display</span>
+                        <span class="tag">Moisture Sensor</span>
+                        <span class="tag">Capacitive Touch</span>
+                    </div>
+                </div>
+                <div class="project-card blue reveal">
+                    <span class="project-emoji">🚚</span>
+                    <div class="project-title">Home Delivery Robot</div>
+                    <div class="project-desc">
+                        Indoor navigation robot that finds its way around the house using ArUco
+                        marker detection on walls. ESP32-CAM handles vision + WiFi; Arduino Mega
+                        controls the motors. Budget: ~$153.
+                    </div>
+                    <div class="project-tags">
+                        <span class="tag">ESP32-CAM</span>
+                        <span class="tag">ArUco Markers</span>
+                        <span class="tag">Arduino Mega</span>
+                        <span class="tag">Navigation</span>
+                    </div>
+                </div>
+                <div class="project-card yellow reveal">
+                    <span class="project-emoji">🧩</span>
+                    <div class="project-title">Cube Scramble Trainer</div>
+                    <div class="project-desc">
+                        Browser-based color input UI for solving scrambles — built after OpenCV kept
+                        confusing red and orange stickers. Full solve visualization with algorithm output.
+                    </div>
+                    <div class="project-tags">
+                        <span class="tag">HTML/CSS/JS</span>
+                        <span class="tag">Kociemba Algorithm</span>
+                        <span class="tag">WebGL</span>
+                    </div>
+                </div>
+                <div class="project-card pink reveal">
+                    <span class="project-emoji">📅</span>
+                    <div class="project-title">Smart Schedule System</div>
+                    <div class="project-desc">
+                        Built a structured daily timetable with school, homework, Math Olympiad,
+                        drums, and downtime blocks — exported to Google Sheets. Work smarter, not harder.
+                    </div>
+                    <div class="project-tags">
+                        <span class="tag">Google Sheets</span>
+                        <span class="tag">Time Management</span>
+                        <span class="tag">Automation</span>
+                    </div>
+                </div>
+                <div class="project-card orange reveal">
+                    <span class="project-emoji">🌐</span>
+                    <div class="project-title">This Portfolio!</div>
+                    <div class="project-desc">
+                        Built with Three.js for the 3D Rubik's cube intro, custom CSS animations,
+                        and a fun playful aesthetic. The solve animation is actually based on real move notation.
+                    </div>
+                    <div class="project-tags">
+                        <span class="tag">Three.js</span>
+                        <span class="tag">HTML/CSS</span>
+                        <span class="tag">JavaScript</span>
+                        <span class="tag">3D Graphics</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CUBING -->
+        <section id="cubing">
+            <div class="section-eyebrow">Speed Cubing</div>
+            <h2 class="section-title">Official WCA results.</h2>
+            <div class="cubing-grid">
+                <div class="result-card reveal">
+                    <div class="result-event">🟧 3×3×3 Cube</div>
+                    <div class="result-row">
+                        <span class="label">Personal Best (Single)</span>
+                        <span class="value highlight">33.44s</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="label">Average</span>
+                        <span class="value">39.43s</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="label">Competition</span>
+                        <span class="value">Belmont Spring 2026</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="label">Placing (Round 1)</span>
+                        <span class="value">131st</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="label">Solves</span>
+                        <span class="value">55.77 / 44.43 / 36.44 / 33.44 / 37.42</span>
+                    </div>
+                </div>
+                <div class="result-card reveal">
+                    <div class="result-event">🟦 2×2×2 Cube</div>
+                    <div class="result-row">
+                        <span class="label">Personal Best (Single)</span>
+                        <span class="value highlight">8.43s</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="label">Average</span>
+                        <span class="value">18.76s</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="label">Competition</span>
+                        <span class="value">Belmont Spring 2026</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="label">Placing (Round 1)</span>
+                        <span class="value">107th</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="label">Solves</span>
+                        <span class="value">11.02 / DNF / 29.22 / 8.43 / 16.05</span>
+                    </div>
+                </div>
+            </div>
+            <a href="https://www.worldcubeassociation.org/persons/2026KANN01" target="_blank" class="wca-badge">
+                🔗 View on WCA Profile
+            </a>
+        </section>
+
+        <!-- CONTACT -->
+        <section id="contact">
+            <div class="contact-box">
+                <div class="section-eyebrow">Get In Touch</div>
+                <h2 class="section-title">Let's build something cool.</h2>
+                <p>
+                    Got a robotics project idea? Want to talk cubing? Have a science fair collab?
+                    I'd love to hear from you.
+                </p>
+                <div class="contact-links">
+                    <a href="https://www.worldcubeassociation.org/persons/2026KANN01" target="_blank"
+                        class="btn-primary">WCA Profile</a>
+                    <a href="mailto:nikhil@example.com" class="btn-outline">Say Hello</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer>
+            <span>© 2026 <strong>Nikhil Kannankara</strong> — Cupertino, CA</span>
+            <span style="display:flex;gap:8px;align-items:center;">
+                WCA ID: <strong>2026KANN01</strong>
+            </span>
+        </footer>
     </div>
 
-    <!-- Privacy Info Modal -->
-    <div id="privacyModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('privacyModal')">&times;</span>
-            <h2>Don't share my personal info</h2>
-            <p>Why would I! First of all, I don't have any. Second of all, if I did, what would I do with it?</p>
-        </div>
-    </div>
-
-    <script src="script.js?v=1.4"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
-        // Direct handling of modals to bypass any external script issues
-        function openCookieModal() {
-            const modal = document.getElementById('cookieModal');
-            if (modal) {
-                modal.style.display = 'flex';
-                console.log('Cookie modal opened');
-            } else {
-                console.error('Cookie modal not found');
-            }
-        }
+        (function () {
+            const allStickers = [];
 
-        function openPrivacyModal() {
-            const modal = document.getElementById('privacyModal');
-            if (modal) {
-                modal.style.display = 'flex';
-                console.log('Privacy modal opened');
-            } else {
-                console.error('Privacy modal not found');
-            }
-        }
+            const STANDARD_COLORS = {
+                U: 0xFFFFFF,
+                D: 0xFFD700,
+                F: 0x00AA44,
+                B: 0x0055FF,
+                L: 0xFF6B35,
+                R: 0xCC0000,
+                X: 0x1A1A2E
+            };
 
-        function closeModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if (modal) modal.style.display = 'none';
-        }
+            const MACARON_COLORS = {
+                U: 0xFFFFFF,
+                D: 0xFFE5B4, // peach
+                F: 0x98FF98, // mint
+                B: 0xADD8E6, // baby blue
+                L: 0xFFB6C1, // light pink
+                R: 0xE6E6FA, // lavender
+                X: 0x1A1A2E
+            };
 
-        // Close when clicking outside
-        window.onclick = function (event) {
-            const cookieModal = document.getElementById('cookieModal');
-            const privacyModal = document.getElementById('privacyModal');
-            if (event.target == cookieModal) {
-                cookieModal.style.display = "none";
+            let COLORS = STANDARD_COLORS;
+
+            function updateAllColors(useMacaron) {
+                COLORS = useMacaron ? MACARON_COLORS : STANDARD_COLORS;
+                allStickers.forEach(mesh => {
+                    mesh.material.color.setHex(COLORS[mesh.userData.faceName]);
+                });
             }
-            if (event.target == privacyModal) {
-                privacyModal.style.display = "none";
+
+            function makeCube(size) {
+                const scene = new THREE.Scene();
+                const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+                camera.position.set(4, 3.5, 5);
+                camera.lookAt(0, 0, 0);
+
+                const canvas = document.getElementById(size === 'mini' ? 'mini-canvas' : 'cube-canvas');
+                const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+                const px = size === 'mini' ? 128 : 760;
+                renderer.setSize(px, px);
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                renderer.setClearColor(0x000000, 0);
+
+                const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+                scene.add(ambientLight);
+                const dirLight = new THREE.DirectionalLight(0xffffff, 0.6);
+                dirLight.position.set(6, 8, 10);
+                scene.add(dirLight);
+
+                const cubieSize = 0.92;
+                const gap = 1.0;
+                const cubeGroup = new THREE.Group();
+                scene.add(cubeGroup);
+
+                const cubies = [];
+
+                function makeFaceMat(color) {
+                    return new THREE.MeshLambertMaterial({ color });
+                }
+
+                function makeCubie(cx, cy, cz) {
+                    const group = new THREE.Group();
+
+                    const baseGeom = new THREE.BoxGeometry(cubieSize, cubieSize, cubieSize);
+                    const baseMat = new THREE.MeshLambertMaterial({ color: 0x1A1A1A });
+                    const baseMesh = new THREE.Mesh(baseGeom, baseMat);
+                    group.add(baseMesh);
+
+                    const stickerSize = cubieSize * 0.88;
+                    const stickerGeom = new THREE.PlaneGeometry(stickerSize, stickerSize);
+                    const offset = cubieSize / 2 + 0.002;
+
+                    function addSticker(faceName, rx, ry, rz, px, py, pz) {
+                        const mat = new THREE.MeshLambertMaterial({ color: COLORS[faceName] });
+                        const mesh = new THREE.Mesh(stickerGeom, mat);
+                        mesh.rotation.set(rx, ry, rz);
+                        mesh.position.set(px, py, pz);
+                        mesh.userData.faceName = faceName;
+                        group.add(mesh);
+                        allStickers.push(mesh);
+                    }
+
+                    if (cx === 1) addSticker('R', 0, Math.PI / 2, 0, offset, 0, 0);
+                    if (cx === -1) addSticker('L', 0, -Math.PI / 2, 0, -offset, 0, 0);
+                    if (cy === 1) addSticker('U', -Math.PI / 2, 0, 0, 0, offset, 0);
+                    if (cy === -1) addSticker('D', Math.PI / 2, 0, 0, 0, -offset, 0);
+                    if (cz === 1) addSticker('F', 0, 0, 0, 0, 0, offset);
+                    if (cz === -1) addSticker('B', 0, Math.PI, 0, 0, 0, -offset);
+
+                    group.position.set(cx * gap, cy * gap, cz * gap);
+                    group.userData = { ox: cx, oy: cy, oz: cz, cx, cy, cz };
+                    cubeGroup.add(group);
+                    return group;
+                }
+
+                for (let x = -1; x <= 1; x++)
+                    for (let y = -1; y <= 1; y++)
+                        for (let z = -1; z <= 1; z++)
+                            cubies.push(makeCubie(x, y, z));
+
+                const moveQueue = [];
+                let animating = false;
+                let animT = 0;
+                const ANIM_DUR = 120;
+                let curMove = null;
+                let movers = [];
+                const pivot = new THREE.Group();
+                scene.add(pivot);
+
+                function startMove(axis, layer, dir) {
+                    curMove = { axis, layer, dir };
+                    animT = 0;
+                    movers = cubies.filter(c => Math.round(c.userData['c' + axis]) === layer);
+                    pivot.position.set(0, 0, 0);
+                    pivot.rotation.set(0, 0, 0);
+                    movers.forEach(c => pivot.add(c));
+                    cubeGroup.add(pivot);
+                    animating = true;
+                }
+
+                function endMove() {
+                    movers.forEach(c => {
+                        cubeGroup.attach(c);
+                        const pos = c.position.clone().round();
+                        c.userData.cx = Math.round(pos.x / gap);
+                        c.userData.cy = Math.round(pos.y / gap);
+                        c.userData.cz = Math.round(pos.z / gap);
+                    });
+                    pivot.rotation.set(0, 0, 0);
+                    pivot.position.set(0, 0, 0);
+                    movers = [];
+                    curMove = null;
+                    animating = false;
+                    if (moveQueue.length) {
+                        const nm = moveQueue.shift();
+                        startMove(nm.axis, nm.layer, nm.dir);
+                    }
+                }
+
+                function queueMove(axis, layer, dir) {
+                    if (!animating && !moveQueue.length) {
+                        startMove(axis, layer, dir);
+                    } else {
+                        moveQueue.push({ axis, layer, dir });
+                    }
+                }
+
+                const axes = ['x', 'y', 'z'];
+                let scrambleMoves = [];
+
+                function recordedScramble(n) {
+                    scrambleMoves = [];
+                    for (let i = 0; i < n; i++) {
+                        const ax = axes[Math.floor(Math.random() * 3)];
+                        const layer = [-1, 0, 1][Math.floor(Math.random() * 3)];
+                        const dir = Math.random() > 0.5 ? 1 : -1;
+                        scrambleMoves.push({ axis: ax, layer, dir });
+                        queueMove(ax, layer, dir);
+                    }
+                }
+
+                function solve() {
+                    const rev = [...scrambleMoves].reverse();
+                    rev.forEach(m => queueMove(m.axis, m.layer, -m.dir));
+                }
+
+                function applyPattern(moves) {
+                    const rev = [...scrambleMoves].reverse();
+                    rev.forEach(m => queueMove(m.axis, m.layer, -m.dir));
+                    moves.forEach(m => queueMove(m.axis, m.layer, m.dir));
+                    scrambleMoves = moves.slice();
+                }
+
+                let lastTime = 0;
+                function animate(t) {
+                    requestAnimationFrame(animate);
+                    const dt = t - lastTime;
+                    lastTime = t;
+
+                    if (animating && curMove) {
+                        animT += dt;
+                        const progress = Math.min(animT / ANIM_DUR, 1);
+                        const eased = progress < 0.5 ? 2 * progress * progress : -1 + (4 - 2 * progress) * progress;
+                        const angle = (Math.PI / 2) * curMove.dir * eased;
+                        if (curMove.axis === 'x') pivot.rotation.x = angle;
+                        if (curMove.axis === 'y') pivot.rotation.y = angle;
+                        if (curMove.axis === 'z') pivot.rotation.z = angle;
+                        if (progress >= 1) endMove();
+                    }
+
+                    renderer.render(scene, camera);
+                }
+                requestAnimationFrame(animate);
+
+                return {
+                    scene, camera, renderer, cubeGroup, queueMove, recordedScramble, solve, pivot, applyPattern,
+                    get isBusy() { return animating || moveQueue.length > 0; }
+                };
             }
-        }
+
+            function addOrbitControl(canvas, group) {
+                let dragging = false, lastX = 0, lastY = 0;
+                canvas.addEventListener('mousedown', e => { dragging = true; lastX = e.clientX; lastY = e.clientY; });
+                window.addEventListener('mousemove', e => {
+                    if (!dragging) return;
+                    const dx = e.clientX - lastX, dy = e.clientY - lastY;
+                    group.rotation.y += dx * 0.012;
+                    group.rotation.x += dy * 0.012;
+                    lastX = e.clientX; lastY = e.clientY;
+                });
+                window.addEventListener('mouseup', () => dragging = false);
+                canvas.addEventListener('touchstart', e => { e.preventDefault(); dragging = true; lastX = e.touches[0].clientX; lastY = e.touches[0].clientY; }, { passive: false });
+                canvas.addEventListener('touchmove', e => {
+                    if (!dragging) return;
+                    const dx = e.touches[0].clientX - lastX, dy = e.touches[0].clientY - lastY;
+                    group.rotation.y += dx * 0.012;
+                    group.rotation.x += dy * 0.012;
+                    lastX = e.touches[0].clientX; lastY = e.touches[0].clientY;
+                });
+                canvas.addEventListener('touchend', () => dragging = false);
+            }
+
+            const introCube = makeCube('main');
+            introCube.cubeGroup.rotation.x = 0.4;
+            introCube.cubeGroup.rotation.y = -0.5;
+            addOrbitControl(document.getElementById('cube-canvas'), introCube.cubeGroup);
+
+            function parseAlg(str) {
+                const moves = [];
+                const parts = str.trim().split(' ');
+                for (const p of parts) {
+                    if (!p) continue;
+                    const face = p[0];
+                    let dir = -1;
+                    if (p.includes("'")) dir = 1;
+                    let count = 1;
+                    if (p.includes("2")) count = 2;
+
+                    let axis, layer;
+                    if (face === 'R') { axis = 'x'; layer = 1; }
+                    else if (face === 'L') { axis = 'x'; layer = -1; dir = -dir; }
+                    else if (face === 'U') { axis = 'y'; layer = 1; }
+                    else if (face === 'D') { axis = 'y'; layer = -1; dir = -dir; }
+                    else if (face === 'F') { axis = 'z'; layer = 1; }
+                    else if (face === 'B') { axis = 'z'; layer = -1; dir = -dir; }
+
+                    for (let i = 0; i < count; i++) {
+                        moves.push({ axis, layer, dir });
+                    }
+                }
+                return moves;
+            }
+
+            const PATTERNS = {
+                checkerboard: [
+                    { axis: 'x', layer: 0, dir: 1 }, { axis: 'x', layer: 0, dir: 1 },
+                    { axis: 'y', layer: 0, dir: 1 }, { axis: 'y', layer: 0, dir: 1 },
+                    { axis: 'z', layer: 0, dir: 1 }, { axis: 'z', layer: 0, dir: 1 }
+                ],
+                cubeincube: parseAlg("U' L' U' F' R2 B' R F U B2 U B' L U' F U R F'")
+            };
+
+            const macaronSwitch = document.getElementById('macaron-switch');
+            macaronSwitch.addEventListener('change', (e) => {
+                updateAllColors(e.target.checked);
+            });
+
+            document.querySelectorAll('.pattern-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (introCube.isBusy) return;
+                    const pat = btn.getAttribute('data-pattern');
+                    if (pat === 'scramble') {
+                        introCube.applyPattern([]); // Clear it
+                        introCube.recordedScramble(18); // Give new scramble
+                    } else if (PATTERNS[pat]) {
+                        introCube.applyPattern(PATTERNS[pat]);
+                    }
+                });
+            });
+
+            setTimeout(() => introCube.recordedScramble(18), 400);
+
+            const solveBtn = document.getElementById('solve-btn');
+            solveBtn.addEventListener('click', () => {
+                if (introCube.isBusy) return;
+                solveBtn.disabled = true;
+                solveBtn.querySelector('span').textContent = '⚡ Solving...';
+                introCube.solve();
+                const checkDone = setInterval(() => {
+                    if (!introCube.isBusy) {
+                        clearInterval(checkDone);
+                        setTimeout(transitionToMain, 500);
+                    }
+                }, 100);
+            });
+
+            function transitionToMain() {
+                const intro = document.getElementById('intro');
+                intro.classList.add('hidden');
+
+                document.getElementById('mini-cube-wrap').classList.add('visible');
+                document.getElementById('nav').classList.add('visible');
+                document.getElementById('main-content').classList.add('visible');
+
+                const miniCube = makeCube('mini');
+                miniCube.cubeGroup.rotation.x = 0.4;
+                miniCube.cubeGroup.rotation.y = -0.5;
+
+                let mt = 0;
+                function rotateMini() {
+                    requestAnimationFrame(rotateMini);
+                    mt += 0.012;
+                    miniCube.cubeGroup.rotation.y = mt;
+                }
+                rotateMini();
+
+                initScrollReveal();
+
+                setTimeout(() => { intro.style.display = 'none'; }, 900);
+            }
+
+            function initScrollReveal() {
+                const els = document.querySelectorAll('.reveal');
+                const obs = new IntersectionObserver(entries => {
+                    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in-view'); obs.unobserve(e.target); } });
+                }, { threshold: 0.12 });
+                els.forEach(el => obs.observe(el));
+            }
+
+            // Hide nav and mini cube unless at the absolute top
+            window.addEventListener('scroll', () => {
+                const navEl = document.getElementById('nav');
+                const miniCubeWrap = document.getElementById('mini-cube-wrap');
+
+                if (window.scrollY > 10) {
+                    navEl.classList.add('nav-hidden');
+                    miniCubeWrap.classList.add('cube-hidden');
+                } else {
+                    navEl.classList.remove('nav-hidden');
+                    miniCubeWrap.classList.remove('cube-hidden');
+                }
+            });
+
+        })();
     </script>
 </body>
 
