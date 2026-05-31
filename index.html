@@ -7,7 +7,7 @@
     <title>Nikhil Kannankara</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link
-        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=Architects+Daughter&display=swap"
         rel="stylesheet">
     <style>
         *,
@@ -476,6 +476,14 @@
             animation-delay: -3s;
         }
 
+        .cube-pos-3 {
+            width: 110px;
+            right: calc(51vw - 30px);
+            top: 20%;
+            z-index: 6;
+            animation-delay: -1.5s;
+        }
+
         @keyframes float {
             0% {
                 transform: translateY(0px) rotate(0deg);
@@ -602,6 +610,15 @@
             border-radius: 50px;
             font-size: 13px;
             font-weight: 500;
+            text-decoration: none;
+            display: inline-block;
+            transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s, border-color 0.2s, filter 0.2s;
+        }
+
+        a.chip:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+            filter: brightness(0.95);
         }
 
         .chip-orange {
@@ -645,12 +662,53 @@
             border: 2px solid #E5E7EB;
             border-radius: 20px;
             padding: 24px 28px;
-            transition: border-color 0.2s, transform 0.2s;
+            transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            position: relative;
         }
 
         .extra-card:hover {
             border-color: var(--orange);
             transform: translateX(4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+        }
+
+        .text-link {
+            color: var(--orange);
+            text-decoration: none;
+            font-weight: 600;
+            transition: opacity 0.2s;
+        }
+
+        .text-link:hover {
+            text-decoration: underline;
+            opacity: 0.85;
+        }
+
+        .click-me-sign {
+            position: absolute;
+            bottom: 12px;
+            right: 24px;
+            font-family: 'Architects Daughter', cursive;
+            font-size: 13px;
+            color: #7c7c8c;
+            opacity: 0.85;
+            transform: rotate(-3deg);
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: opacity 0.25s, transform 0.25s, color 0.25s;
+            user-select: none;
+        }
+
+        a.project-card:hover .click-me-sign,
+        a.extra-card:hover .click-me-sign {
+            opacity: 1;
+            color: var(--orange);
+            transform: rotate(-1deg) scale(1.04);
         }
 
         .extra-icon {
@@ -686,7 +744,17 @@
             position: relative;
             overflow: hidden;
             transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        div.project-card {
             cursor: default;
+        }
+
+        a.project-card {
+            cursor: pointer;
         }
 
         .project-card::before {
@@ -986,6 +1054,7 @@
             <img src="assets/hero-sketch.png" alt="Nikhil Sketch" class="hero-sketch">
             <img src="assets/cube-2x2.jpg" alt="2x2 Cube" class="floating-cube cube-pos-1">
             <img src="assets/cube-skewb.jpg" alt="Skewb Cube" class="floating-cube cube-pos-2">
+            <img src="assets/cube-pyraminx.jpg" alt="Pyraminx Puzzle" class="floating-cube cube-pos-3">
             <div class="hero-tag"><span class="dot"></span> Based in Cupertino, CA</div>
             <h1 class="hero-name">Nikhil<br><span class="accent">Kannankara</span></h1>
             <p class="hero-sub">Builder · Maker · Speed Cuber</p>
@@ -1032,7 +1101,7 @@
                     </p>
                     <p>
                         I love robotics (Arduino + Raspberry Pi are basically my best friends), speed cubing,
-                        National Park Junior Ranger badges, and figuring out how everything works under the hood.
+                        <a href="https://www.nps.gov/kids/junior-rangers.htm" target="_blank" rel="noopener noreferrer" class="text-link">National Park Junior Ranger badges</a>, and figuring out how everything works under the hood.
                     </p>
                     <div class="about-chips">
                         <span class="chip chip-orange">Arduino / Raspberry Pi</span>
@@ -1040,9 +1109,9 @@
                         <span class="chip chip-green">3D Printing (PLA+)</span>
                         <span class="chip chip-yellow">OpenCV</span>
                         <span class="chip chip-pink">Speed Cubing</span>
-                        <span class="chip chip-blue">Math Olympiad</span>
+                        <a href="https://www.moems.org/" target="_blank" rel="noopener noreferrer" class="chip chip-blue">Math Olympiad</a>
                         <span class="chip chip-orange">Drums</span>
-                        <span class="chip chip-green">Junior Ranger</span>
+                        <a href="https://www.nps.gov/kids/junior-rangers.htm" target="_blank" rel="noopener noreferrer" class="chip chip-green">Junior Ranger</a>
                     </div>
                 </div>
                 <div class="about-extras reveal">
@@ -1052,18 +1121,20 @@
                         <div class="extra-desc">Playing drums since forever. Rhythm is everywhere — in music, code
                             loops, and solve algorithms.</div>
                     </div>
-                    <div class="extra-card">
+                    <a href="https://www.nps.gov/kids/junior-rangers.htm" target="_blank" rel="noopener noreferrer" class="extra-card">
                         <div class="extra-icon">🏕️</div>
                         <div class="extra-title">Junior Ranger</div>
                         <div class="extra-desc">Collecting NPS Junior Ranger badges across the country — Crater Lake,
                             Appomattox, Bering Land Bridge, and more.</div>
-                    </div>
-                    <div class="extra-card">
+                        <div class="click-me-sign">click me <svg class="handwritten-arrow" width="22" height="15" viewBox="0 0 30 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="transform: rotate(5deg);"><path d="M 3,15 C 10,12 18,9 25,5" /><path d="M 18,3 C 21,3 25,5 25,5 C 25,5 23,9 22,12" /></svg></div>
+                    </a>
+                    <a href="https://www.moems.org/" target="_blank" rel="noopener noreferrer" class="extra-card">
                         <div class="extra-icon">🧮</div>
                         <div class="extra-title">Math Olympiad</div>
                         <div class="extra-desc">Competing in Math Olympiad and loving every puzzle. The harder the
                             problem, the better.</div>
-                    </div>
+                        <div class="click-me-sign">click me <svg class="handwritten-arrow" width="22" height="15" viewBox="0 0 30 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="transform: rotate(5deg);"><path d="M 3,15 C 10,12 18,9 25,5" /><path d="M 18,3 C 21,3 25,5 25,5 C 25,5 23,9 22,12" /></svg></div>
+                    </a>
                 </div>
             </div>
         </section>
@@ -1104,21 +1175,23 @@
                         <span class="tag">Capacitive Touch</span>
                     </div>
                 </div>
-                <div class="project-card blue reveal">
-                    <span class="project-emoji">🚚</span>
-                    <div class="project-title">Home Delivery Robot</div>
+                <a href="https://github.com/knikhil25/calorie-counter" target="_blank" rel="noopener noreferrer" class="project-card blue reveal">
+                    <span class="project-emoji">🥗</span>
+                    <div class="project-title">AI Calorie Counter</div>
                     <div class="project-desc">
-                        Indoor navigation robot that finds its way around the house using ArUco
-                        marker detection on walls. ESP32-CAM handles vision + WiFi; Arduino Mega
-                        controls the motors. Budget: ~$153.
+                        A modern, chat-based calorie tracking app powered by Ollama. Log food naturally, 
+                        use local vision AI to analyze meal photos, and monitor intake history with interactive 
+                        charts. Runs entirely on-device for total privacy.
                     </div>
                     <div class="project-tags">
-                        <span class="tag">ESP32-CAM</span>
-                        <span class="tag">ArUco Markers</span>
-                        <span class="tag">Arduino Mega</span>
-                        <span class="tag">Navigation</span>
+                        <span class="tag">React / Vite</span>
+                        <span class="tag">Express</span>
+                        <span class="tag">Ollama (LLaVA)</span>
+                        <span class="tag">better-sqlite3</span>
+                        <span class="tag">Chart.js</span>
                     </div>
-                </div>
+                    <div class="click-me-sign">click me <svg class="handwritten-arrow" width="22" height="15" viewBox="0 0 30 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="transform: rotate(5deg);"><path d="M 3,15 C 10,12 18,9 25,5" /><path d="M 18,3 C 21,3 25,5 25,5 C 25,5 23,9 22,12" /></svg></div>
+                </a>
                 <div class="project-card yellow reveal">
                     <span class="project-emoji">🧩</span>
                     <div class="project-title">Cube Scramble Trainer</div>
@@ -1136,7 +1209,7 @@
                     <span class="project-emoji">📅</span>
                     <div class="project-title">Smart Schedule System</div>
                     <div class="project-desc">
-                        Built a structured daily timetable with school, homework, Math Olympiad,
+                        Built a structured daily timetable with school, homework, <a href="https://www.moems.org/" target="_blank" rel="noopener noreferrer" class="text-link">Math Olympiad</a>,
                         drums, and downtime blocks — exported to Google Sheets. Work smarter, not harder.
                     </div>
                     <div class="project-tags">
@@ -1145,6 +1218,22 @@
                         <span class="tag">Automation</span>
                     </div>
                 </div>
+                <a href="https://github.com/knikhil25/solarsystem" target="_blank" rel="noopener noreferrer" class="project-card blue reveal">
+                    <span class="project-emoji">🪐</span>
+                    <div class="project-title">Interactive 3D Solar System</div>
+                    <div class="project-desc">
+                        A real-time, interactive 3D solar system built with Three.js. Planets are rendered as
+                        hand-crafted clay spheres with unique details — craters on Mercury, volcanoes on Mars,
+                        and a raised Great Red Spot on Jupiter. On load, all planets are positioned accurately for that day.
+                    </div>
+                    <div class="project-tags">
+                        <span class="tag">Three.js</span>
+                        <span class="tag">WebGL</span>
+                        <span class="tag">Astronomical Epoch</span>
+                        <span class="tag">3D Graphics</span>
+                    </div>
+                    <div class="click-me-sign">click me <svg class="handwritten-arrow" width="22" height="15" viewBox="0 0 30 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="transform: rotate(5deg);"><path d="M 3,15 C 10,12 18,9 25,5" /><path d="M 18,3 C 21,3 25,5 25,5 C 25,5 23,9 22,12" /></svg></div>
+                </a>
                 <div class="project-card orange reveal">
                     <span class="project-emoji">🌐</span>
                     <div class="project-title">This Portfolio!</div>
@@ -1211,6 +1300,52 @@
                     <div class="result-row">
                         <span class="label">Solves</span>
                         <span class="value">11.02 / DNF / 29.22 / 8.43 / 16.05</span>
+                    </div>
+                </div>
+                <div class="result-card reveal">
+                    <div class="result-event">🔺 Pyraminx</div>
+                    <div class="result-row">
+                        <span class="label">Personal Best (Single)</span>
+                        <span class="value highlight">8.76s</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="label">Average</span>
+                        <span class="value">15.57s</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="label">Competition</span>
+                        <span class="value">SacCubing XXIII 2026</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="label">Placing (Round 1)</span>
+                        <span class="value">33rd</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="label">Solves</span>
+                        <span class="value">18.69 / 13.59 / 8.76 / 18.69 / 14.44</span>
+                    </div>
+                </div>
+                <div class="result-card reveal">
+                    <div class="result-event">🔷 Skewb</div>
+                    <div class="result-row">
+                        <span class="label">Personal Best (Single)</span>
+                        <span class="value highlight">12.35s</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="label">Average</span>
+                        <span class="value">16.42s</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="label">Competition</span>
+                        <span class="value">SacCubing XXIII 2026</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="label">Placing (Round 1)</span>
+                        <span class="value">29th</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="label">Solves</span>
+                        <span class="value">17.57 / 14.97 / 16.72 / 27.33 / 12.35</span>
                     </div>
                 </div>
             </div>
