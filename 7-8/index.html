@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saat Aath (7-8) - Multiplayer Card Game</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- MQTT.js Client via CDN -->
+    <script src="https://unpkg.com/mqtt@4.3.7/dist/mqtt.min.js" type="text/javascript"></script>
+</head>
+<body>
+    <!-- App Container -->
+    <div id="app-container">
+        
+        <!-- Background Ambient Glows -->
+        <div class="ambient-glow glow-1"></div>
+        <div class="ambient-glow glow-2"></div>
+        
+
+
+        <!-- MAIN LAYOUT -->
+        <main id="main-content">
+            
+            <!-- 1. LOBBY SCREEN -->
+            <section id="lobby-screen" class="screen active">
+                <div class="lobby-card">
+                    <h1>Satti Atthi (7-8)</h1>
+                    <p class="lobby-description">
+                        A classic Indian strategic 2-player card game. Player 1 (Trump Maker) must win at least 8 sets, while Player 2 (Dealer) must win at least 7. Extra sets won translate into card-stealing power in the next round!
+                    </p>
+                    
+                    <div class="lobby-actions">
+                        <div class="action-box">
+                            <h2>Host a New Game</h2>
+                            <p>Generate a unique 4-digit code and invite your friend.</p>
+                            <button id="create-room-btn" class="primary-btn">Create Room</button>
+                        </div>
+                        
+                        <div class="divider"><span>OR</span></div>
+                        
+                        <div class="action-box">
+                            <h2>Join a Game</h2>
+                            <p>Enter the 4-digit code provided by your friend.</p>
+                            <div class="join-input-group">
+                                <input type="text" id="join-code-input" placeholder="Enter 4-Digit Code" maxlength="4" autocomplete="off">
+                                <button id="join-room-btn" class="primary-btn">Join Room</button>
+                            </div>
+                            <span id="lobby-error" class="error-msg"></span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. WAITING LOBBY SCREEN -->
+            <section id="waiting-screen" class="screen">
+                <div class="waiting-card">
+                    <div class="spinner-container">
+                        <div class="game-spinner"></div>
+                    </div>
+                    <h1>Waiting for Player 2</h1>
+                    <p>Share this code with your friend to connect in real-time:</p>
+                    
+                    <div class="room-code-display">
+                        <span id="display-room-code">----</span>
+                        <button id="copy-code-btn" class="icon-btn" title="Copy Invitation Link">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        </button>
+                    </div>
+                    
+                    <span id="copy-toast" class="toast-message">Link copied to clipboard!</span>
+                    
+                    <p class="waiting-hint">Once they enter this code, your match will begin automatically.</p>
+                    <button id="leave-waiting-btn" class="secondary-btn">Cancel</button>
+                </div>
+            </section>
+
+            <!-- 3. GAMEPLAY SCREEN -->
+            <section id="game-screen" class="screen">
+                <div class="game-container">
+                    
+                    <!-- Table Area -->
+                    <div class="game-table-wrapper">
+                        <div class="table-felt">
+                            
+                            <!-- Opponent Area -->
+                            <div class="player-slot opponent-slot">
+                                <div class="player-avatar-bar">
+                                    <div class="avatar-ring">
+                                        <div class="avatar-placeholder">OP</div>
+                                    </div>
+                                    <div class="player-info-details">
+                                        <span id="opponent-name" class="player-username">Opponent</span>
+                                        <span id="opponent-role-tag" class="role-tag">Dealer (7)</span>
+                                    </div>
+                                    <div class="player-stats-pill">
+                                        <span class="stat-label">Sets:</span>
+                                        <strong id="opponent-tricks" class="stat-value">0 / 7</strong>
+                                    </div>
+                                </div>
+                                <div id="opponent-hand-preview" class="hand-preview">
+                                    <!-- Opponent's cards represented as card backs -->
+                                </div>
+                            </div>
+                            
+                            <!-- Opponent Table Cards -->
+                            <div id="opponent-table-sets" class="table-sets-container">
+                                <!-- Dealt table sets will go here -->
+                            </div>
+                            
+                            <!-- Play Mat (Center Area) -->
+                            <div class="play-mat">
+                                <div class="mat-center">
+                                    <!-- Led Suit & Trump indicators -->
+                                    <div class="mat-indicators">
+                                        <div class="indicator-item trump-indicator">
+                                            <span class="ind-label">Trump:</span>
+                                            <span id="current-trump-val" class="ind-value">—</span>
+                                        </div>
+                                        <div class="indicator-item round-indicator">
+                                            <span class="ind-label">Round:</span>
+                                            <span id="current-round-val" class="ind-value">1</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Played Cards Workspace -->
+                                    <div class="played-cards-area">
+                                        <!-- Opponent played card spot -->
+                                        <div id="mat-opponent-card-spot" class="played-card-spot"></div>
+                                        
+                                        <!-- Player played card spot -->
+                                        <div id="mat-player-card-spot" class="played-card-spot"></div>
+                                    </div>
+
+                                    <!-- Table status banners -->
+                                    <div id="mat-banner" class="mat-banner-info">Waiting for game start...</div>
+                                    <div id="mat-winner-highlight" class="mat-winner-highlight hidden">Opponent won the trick!</div>
+                                </div>
+                            </div>
+
+                            <!-- Player Table Cards -->
+                            <div id="player-table-sets" class="table-sets-container">
+                                <!-- Dealt table sets will go here -->
+                            </div>
+                            
+                            <!-- Player Hand Area -->
+                            <div class="player-slot player-slot-bottom">
+                                <div class="player-avatar-bar">
+                                    <div class="avatar-ring player-self">
+                                        <div class="avatar-placeholder">ME</div>
+                                    </div>
+                                    <div class="player-info-details">
+                                        <span id="player-name" class="player-username">You</span>
+                                        <span id="player-role-tag" class="role-tag">Trump Maker (8)</span>
+                                    </div>
+                                    <div class="player-stats-pill">
+                                        <span class="stat-label">Sets:</span>
+                                        <strong id="player-tricks" class="stat-value">0 / 8</strong>
+                                    </div>
+                                </div>
+
+                                <div id="player-hand" class="player-hand-container">
+                                    <!-- Cards will be populated here by Javascript -->
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    
+                    <!-- Sidebar Console -->
+                    <aside class="game-sidebar" id="game-sidebar">
+                        <!-- Toggle Strip (always visible) -->
+                        <button id="sidebar-toggle-btn" class="sidebar-toggle" title="Toggle Sidebar" aria-label="Toggle sidebar">
+                            <span class="sidebar-toggle-icon">◀</span>
+                            <span class="sidebar-toggle-label">7-8</span>
+                        </button>
+
+                        <!-- Collapsible Panel -->
+                        <div class="sidebar-panel" id="sidebar-panel">
+                            <!-- Logo / Branding -->
+                            <div class="sidebar-brand">
+                                <span class="sidebar-logo"><span class="logo-accent">SAAT</span> AATH</span>
+                                <a href="/" class="back-site-btn">← Back to site</a>
+                            </div>
+
+                            <!-- Connection Status -->
+                            <div id="connection-indicator" class="disconnected sidebar-connection">
+                                <span class="indicator-dot"></span>
+                                <span class="indicator-text">Disconnected</span>
+                            </div>
+
+                            <!-- Room Details (hidden until in game) -->
+                            <div class="sidebar-section match-info" id="sidebar-room-section">
+                                <h3>Room Details</h3>
+                                <div class="room-code-tag">Code: <strong id="sidebar-room-code">----</strong></div>
+                            </div>
+
+                            <!-- Match Log -->
+                            <div class="sidebar-section logs-container">
+                                <h3>Match Log</h3>
+                                <div id="log-console" class="log-console-box">
+                                    <div class="log-entry system">Welcome to Saat Aath (7-8)!</div>
+                                    <div class="log-entry system">Waiting for play setup...</div>
+                                </div>
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="sidebar-actions">
+                                <button id="forfeit-btn" class="danger-btn">Forfeit Match</button>
+                            </div>
+                        </div>
+                    </aside>
+                    
+                </div>
+            </section>
+        </main>
+        
+        <!-- TRUMP SELECTION OVERLAY -->
+        <div id="trump-select-overlay" class="modal-overlay">
+            <div class="modal-content trump-modal">
+                <h2>Choose Trump Suit</h2>
+                <p>Based on your first 5 cards, declare the trump suit for this round:</p>
+                
+                <div id="trump-deal-preview" class="deal-preview">
+                    <!-- Cards will be shown here -->
+                </div>
+                
+                <div class="trump-options">
+                    <button class="trump-btn spade" data-suit="S">
+                        <span class="suit-icon">♠</span> Spades
+                    </button>
+                    <button class="trump-btn heart" data-suit="H">
+                        <span class="suit-icon">♥</span> Hearts
+                    </button>
+                    <button class="trump-btn diamond" data-suit="D">
+                        <span class="suit-icon">♦</span> Diamonds
+                    </button>
+                    <button class="trump-btn club" data-suit="C">
+                        <span class="suit-icon">♣</span> Clubs
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD PULLING OVERLAY (EXCHANGING CARDS FOR PREVIOUS ROUND SURPLUS/DEFICIT) -->
+        <div id="card-pulling-overlay" class="modal-overlay">
+            <div class="modal-content pulling-modal">
+                <h2 id="pulling-title">Card Exchange Phase</h2>
+                <div class="pulling-status-container">
+                    <p id="pulling-instructions">Waiting for card exchange setup...</p>
+                    
+                    <!-- Pulling animation workspace -->
+                    <div id="pulling-exchange-mat" class="pulling-exchange-mat">
+                        <div id="puller-card-spot" class="exchange-spot">
+                            <span class="spot-label">Pulled card offered</span>
+                        </div>
+                        <div id="exchange-arrow">⇄</div>
+                        <div id="returner-card-spot" class="exchange-spot">
+                            <span class="spot-label">Opponent returned card</span>
+                        </div>
+                    </div>
+                    
+                    <div id="pulling-action-container">
+                        <!-- Select card instructions -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROUND OVER OVERLAY -->
+        <div id="round-over-overlay" class="modal-overlay">
+            <div class="modal-content scoreboard-modal">
+                <h2 id="round-over-title">Round Complete!</h2>
+                
+                <div class="scoreboard-comparison">
+                    <div class="score-card text-center">
+                        <h3 id="scoreboard-p1-name">Player 1</h3>
+                        <p class="role-sub" id="scoreboard-p1-role">Target: 8</p>
+                        <div class="tricks-won" id="scoreboard-p1-won">0</div>
+                        <p class="score-diff" id="scoreboard-p1-diff">--</p>
+                    </div>
+                    <div class="score-vs">VS</div>
+                    <div class="score-card text-center">
+                        <h3 id="scoreboard-p2-name">Player 2</h3>
+                        <p class="role-sub" id="scoreboard-p2-role">Target: 7</p>
+                        <div class="tricks-won" id="scoreboard-p2-won">0</div>
+                        <p class="score-diff" id="scoreboard-p2-diff">--</p>
+                    </div>
+                </div>
+                
+                <div class="pulling-summary-message" id="pulling-summary-msg">
+                    <!-- Summarize who will pull how many cards from who next round -->
+                </div>
+                
+                <div class="scoreboard-actions">
+                    <button id="next-round-btn" class="primary-btn">Ready for Next Round</button>
+                    <button id="exit-game-btn" class="secondary-btn">Return to Lobby</button>
+                </div>
+                <div id="next-round-status" class="status-subtitle">Waiting for opponent to get ready...</div>
+            </div>
+        </div>
+
+        <!-- ALERT / DIALOG OVERLAY -->
+        <div id="alert-overlay" class="modal-overlay">
+            <div class="modal-content alert-modal">
+                <h2 id="alert-title">Notification</h2>
+                <p id="alert-message">Something happened.</p>
+                <div class="alert-actions">
+                    <button id="alert-ok-btn" class="primary-btn">OK</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+    <!-- Game Client Script -->
+    <script src="game.js"></script>
+</body>
+</html>
