@@ -1,0 +1,2708 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="dark light">
+    <script>
+        /* runs before first paint so the theme never flashes */
+        (function () {
+            try {
+                var t = localStorage.getItem('nk_theme');
+                if (!t) t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+                if (t === 'light') document.documentElement.setAttribute('data-theme', 'light');
+            } catch (e) { /* storage blocked — stay dark */ }
+        })();
+    </script>
+    <title>Can't connect yet — Games | Nikhil Kannankara</title>
+    <meta name="description" content="The contact form isn't wired up yet. Have a game instead — Snake, 2048, Memory, Tic-Tac-Toe and a reaction tester, all playable right here.">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23080B14'/><rect x='18' y='18' width='26' height='26' rx='5' fill='%23818CF8'/><rect x='56' y='18' width='26' height='26' rx='5' fill='%23D946EF'/><rect x='18' y='56' width='26' height='26' rx='5' fill='%2322D3EE'/><rect x='56' y='56' width='26' height='26' rx='5' fill='%23A3E635'/></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap"
+        rel="stylesheet">
+    <style>
+        /* ═══ DARK (default): midnight navy + azure ═══ */
+        :root {
+            --bg: #070D1A;
+            --ink: #ECF3FF;
+            --muted: #A3B6D1;
+            --faint: #869DBC;
+            --glass: rgba(255, 255, 255, 0.055);
+            --glass-hi: rgba(255, 255, 255, 0.10);
+            --glass-hover: rgba(255, 255, 255, 0.15);
+            --stroke: rgba(236, 243, 255, 0.13);
+            --stroke-hi: rgba(236, 243, 255, 0.30);
+            --surf-1: rgba(255, 255, 255, 0.045);
+            --surf-2: rgba(255, 255, 255, 0.06);
+            --surf-3: rgba(255, 255, 255, 0.11);
+
+            --indigo: #38BDF8;
+            --violet: #60A5FA;
+            --fuchsia: #7DD3FC;
+            --cyan: #67E8F9;
+            --lime: #22D3EE;
+            --amber: #FBBF24;
+            --rose: #FB7185;
+
+            --accent-grad: linear-gradient(135deg, #38BDF8 0%, #60A5FA 48%, #818CF8 100%);
+            --secret-grad: linear-gradient(135deg, #67E8F9, #818CF8);
+            --on-accent: #04182B;
+            --glow-col: rgba(56, 189, 248, 0.75);
+
+            --veil: rgba(7, 13, 26, 0.5);
+            --veil-2: rgba(7, 13, 26, 0.86);
+            --panel: rgba(7, 13, 26, 0.6);
+            --overlay-bg: rgba(7, 13, 26, 0.86);
+            --toast-bg: rgba(9, 17, 32, 0.92);
+            --stage-bg: #081426;
+
+            --lime-soft: rgba(34, 211, 238, 0.16);
+            --lime-line: rgba(34, 211, 238, 0.45);
+            --amber-soft: rgba(251, 191, 36, 0.14);
+            --amber-line: rgba(251, 191, 36, 0.4);
+            --rose-soft: rgba(251, 113, 133, 0.14);
+            --rose-line: rgba(251, 113, 133, 0.35);
+
+            --b1: #1E3A8A;
+            --b2: #0C4A6E;
+            --b3: #1E40AF;
+            --mesh-blend: screen;
+            --mesh-op: 0.74;
+
+            --t2: #0C2A4A;
+            --t4: #0E3A5E;
+            --t8: #075985;
+            --t16: #0369A1;
+            --t32: #0284C7;
+            --t64: #0E7490;
+            --t128: #1D4ED8;
+            --t256: #4338CA;
+            --t512: #5B21B6;
+            --t1024: #B45309;
+            --snake-food: #FBBF24;
+            --snake-head: #67E8F9;
+            --snake-r: 56;
+            --snake-g: 189;
+            --snake-b: 248;
+
+            --r-lg: 24px;
+            --r-md: 18px;
+            --r-sm: 12px;
+            --r-pill: 999px;
+            --gut: clamp(20px, 5vw, 72px);
+            --maxw: 1100px;
+        }
+
+        /* ═══ LIGHT: cool paper + deep navy ═══ */
+        :root[data-theme="light"] {
+            --bg: #F2F6FB;
+            --ink: #0B1B2E;
+            --muted: #3D5574;
+            --faint: #4F6886;
+            --glass: rgba(255, 255, 255, 0.74);
+            --glass-hi: rgba(255, 255, 255, 0.92);
+            --glass-hover: rgba(255, 255, 255, 0.99);
+            --stroke: rgba(11, 27, 46, 0.14);
+            --stroke-hi: rgba(11, 27, 46, 0.34);
+            --surf-1: rgba(11, 27, 46, 0.045);
+            --surf-2: rgba(11, 27, 46, 0.06);
+            --surf-3: rgba(11, 27, 46, 0.11);
+
+            --indigo: #0369A1;
+            --violet: #0E7490;
+            --fuchsia: #1D4ED8;
+            --cyan: #0E7490;
+            --lime: #0369A1;
+            --amber: #B45309;
+            --rose: #BE123C;
+
+            --accent-grad: linear-gradient(135deg, #0369A1 0%, #1D4ED8 55%, #1E40AF 100%);
+            --secret-grad: linear-gradient(135deg, #0E7490, #1D4ED8);
+            --on-accent: #FFFFFF;
+            --glow-col: rgba(3, 105, 161, 0.35);
+
+            --veil: rgba(242, 246, 251, 0.25);
+            --veil-2: rgba(242, 246, 251, 0.72);
+            --panel: rgba(255, 255, 255, 0.84);
+            --overlay-bg: rgba(242, 246, 251, 0.92);
+            --toast-bg: rgba(255, 255, 255, 0.96);
+            --stage-bg: #E6EEF8;
+
+            --lime-soft: rgba(3, 105, 161, 0.12);
+            --lime-line: rgba(3, 105, 161, 0.4);
+            --amber-soft: rgba(180, 83, 9, 0.12);
+            --amber-line: rgba(180, 83, 9, 0.4);
+            --rose-soft: rgba(190, 18, 60, 0.1);
+            --rose-line: rgba(190, 18, 60, 0.32);
+
+            --b1: #BFDBFE;
+            --b2: #A5F3FC;
+            --b3: #C7D2FE;
+            --mesh-blend: multiply;
+            --mesh-op: 0.4;
+
+            --t2: #DBEAFE;
+            --t4: #BFDBFE;
+            --t8: #93C5FD;
+            --t16: #60A5FA;
+            --t32: #38BDF8;
+            --t64: #22D3EE;
+            --t128: #3B82F6;
+            --t256: #6366F1;
+            --t512: #8B5CF6;
+            --t1024: #F59E0B;
+            --snake-food: #B45309;
+            --snake-head: #0369A1;
+            --snake-r: 29;
+            --snake-g: 78;
+            --snake-b: 216;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            -webkit-text-size-adjust: 100%;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--ink);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            letter-spacing: -0.011em;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+        }
+
+        .mesh {
+            position: fixed;
+            inset: -25vmax;
+            z-index: -3;
+            filter: blur(72px) saturate(135%);
+            pointer-events: none;
+        }
+
+        .mesh b {
+            position: absolute;
+            display: block;
+            border-radius: 50%;
+            mix-blend-mode: var(--mesh-blend);
+            opacity: var(--mesh-op);
+        }
+
+        .m1 {
+            width: 50vmax;
+            height: 50vmax;
+            left: 0%;
+            top: -4%;
+            background: radial-gradient(circle at 50% 50%, var(--b1), transparent 68%);
+            animation: drift1 28s ease-in-out infinite;
+        }
+
+        .m2 {
+            width: 42vmax;
+            height: 42vmax;
+            right: 2%;
+            top: 10%;
+            background: radial-gradient(circle at 50% 50%, var(--b2), transparent 68%);
+            animation: drift2 33s ease-in-out infinite;
+        }
+
+        .m3 {
+            width: 38vmax;
+            height: 38vmax;
+            left: 18%;
+            bottom: 0%;
+            background: radial-gradient(circle at 50% 50%, var(--b3), transparent 70%);
+            animation: drift1 39s ease-in-out infinite reverse;
+        }
+
+        @keyframes drift1 {
+
+            0%,
+            100% {
+                transform: translate3d(0, 0, 0) scale(1);
+            }
+
+            50% {
+                transform: translate3d(9%, 7%, 0) scale(1.13);
+            }
+        }
+
+        @keyframes drift2 {
+
+            0%,
+            100% {
+                transform: translate3d(0, 0, 0) scale(1.05);
+            }
+
+            50% {
+                transform: translate3d(-10%, 8%, 0) scale(1);
+            }
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            pointer-events: none;
+            background: radial-gradient(ellipse 120% 80% at 50% -10%, transparent 0%, var(--veil) 70%, var(--veil-2) 100%);
+        }
+
+        .wrap {
+            max-width: var(--maxw);
+            margin: 0 auto;
+            padding-inline: var(--gut);
+        }
+
+        .glass {
+            background: var(--glass);
+            -webkit-backdrop-filter: blur(20px) saturate(160%);
+            backdrop-filter: blur(20px) saturate(160%);
+            border: 1px solid var(--stroke);
+            border-radius: var(--r-lg);
+            position: relative;
+        }
+
+        a {
+            color: inherit;
+        }
+
+        :focus-visible {
+            outline: 2px solid var(--cyan);
+            outline-offset: 3px;
+            border-radius: 6px;
+        }
+
+        .grad-text {
+            background: var(--accent-grad);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* ── top bar ── */
+        .top {
+            padding: 20px 0 0;
+        }
+
+        .back {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            padding: 9px 17px;
+            border-radius: var(--r-pill);
+            background: var(--glass);
+            -webkit-backdrop-filter: blur(14px);
+            backdrop-filter: blur(14px);
+            border: 1px solid var(--stroke);
+            font-size: 13.5px;
+            font-weight: 500;
+            color: var(--muted);
+            text-decoration: none;
+            transition: color 0.2s, border-color 0.2s, transform 0.2s;
+        }
+
+        .back:hover {
+            color: var(--ink);
+            border-color: var(--stroke-hi);
+            transform: translateX(-3px);
+        }
+
+        .top-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .theme-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: var(--glass);
+            -webkit-backdrop-filter: blur(14px);
+            backdrop-filter: blur(14px);
+            border: 1px solid var(--stroke);
+            color: var(--ink);
+            font-size: 15px;
+            line-height: 1;
+            cursor: pointer;
+            flex: none;
+            transition: border-color 0.2s, transform 0.2s, background 0.2s;
+        }
+
+        .theme-btn:hover {
+            border-color: var(--stroke-hi);
+            transform: translateY(-1px);
+            background: var(--glass-hi);
+        }
+
+        .theme-btn .ico-moon {
+            display: none;
+        }
+
+        :root[data-theme="light"] .theme-btn .ico-sun {
+            display: none;
+        }
+
+        :root[data-theme="light"] .theme-btn .ico-moon {
+            display: inline;
+        }
+
+        /* ── hero ── */
+        .hero {
+            text-align: center;
+            padding: clamp(36px, 7vh, 72px) 0 clamp(26px, 4vh, 40px);
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            padding: 7px 15px;
+            border-radius: var(--r-pill);
+            background: var(--rose-soft);
+            border: 1px solid var(--rose-line);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--rose);
+            margin-bottom: 22px;
+        }
+
+        .badge i {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--rose);
+            box-shadow: 0 0 10px 2px var(--rose-line);
+        }
+
+        h1 {
+            font-family: 'Sora', sans-serif;
+            font-size: clamp(30px, 5.6vw, 58px);
+            font-weight: 800;
+            line-height: 1.04;
+            letter-spacing: -0.04em;
+            max-width: 15ch;
+            margin: 0 auto;
+        }
+
+        .sub {
+            color: var(--muted);
+            font-size: clamp(15px, 1.7vw, 17px);
+            max-width: 52ch;
+            margin: 20px auto 0;
+        }
+
+        /* ── tabs ── */
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin: 34px auto 20px;
+        }
+
+        .tab {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: var(--r-pill);
+            background: var(--glass);
+            -webkit-backdrop-filter: blur(14px);
+            backdrop-filter: blur(14px);
+            border: 1px solid var(--stroke);
+            color: var(--muted);
+            font-family: 'Inter', sans-serif;
+            font-size: 13.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(.2, .8, .2, 1);
+            white-space: nowrap;
+        }
+
+        .tab:hover {
+            color: var(--ink);
+            border-color: var(--stroke-hi);
+            transform: translateY(-2px);
+        }
+
+        .tab[aria-selected="true"] {
+            background: var(--accent-grad);
+            color: var(--on-accent);
+            border-color: transparent;
+            box-shadow: 0 10px 28px -10px var(--glow-col);
+        }
+
+        /* ── stage ── */
+        .stage {
+            padding: clamp(18px, 3vw, 30px);
+            margin-bottom: 50px;
+        }
+
+        .g-head {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        .g-title {
+            font-family: 'Sora', sans-serif;
+            font-size: 19px;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            margin-right: auto;
+        }
+
+        .g-hint {
+            font-size: 13px;
+            color: var(--faint);
+            width: 100%;
+            margin-top: -8px;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: baseline;
+            gap: 7px;
+            padding: 7px 14px;
+            border-radius: var(--r-pill);
+            background: var(--surf-2);
+            border: 1px solid var(--stroke);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .pill b {
+            font-weight: 600;
+            color: var(--lime);
+        }
+
+        .pill span {
+            font-size: 10.5px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--faint);
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: var(--r-pill);
+            font-family: 'Inter', sans-serif;
+            font-size: 13.5px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid var(--stroke);
+            background: var(--glass-hi);
+            color: var(--ink);
+            text-decoration: none;
+            transition: all 0.22s;
+        }
+
+        .btn:hover {
+            border-color: var(--stroke-hi);
+            background: var(--glass-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn.primary {
+            background: var(--accent-grad);
+            color: var(--on-accent);
+            border-color: transparent;
+        }
+
+        .play-area {
+            display: grid;
+            place-items: center;
+            gap: 16px;
+        }
+
+        .board-wrap {
+            position: relative;
+            width: 100%;
+            max-width: 440px;
+        }
+
+        .overlay {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            place-content: center;
+            gap: 12px;
+            text-align: center;
+            border-radius: var(--r-md);
+            background: var(--overlay-bg);
+            -webkit-backdrop-filter: blur(6px);
+            backdrop-filter: blur(6px);
+            z-index: 5;
+            padding: 20px;
+        }
+
+        .overlay[hidden] {
+            display: none;
+        }
+
+        .overlay h3 {
+            font-family: 'Sora', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+        }
+
+        .overlay p {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .overlay .btn {
+            justify-self: center;
+        }
+
+        /* ── snake ── */
+        canvas {
+            display: block;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            border-radius: var(--r-md);
+            background: var(--surf-1);
+            border: 1px solid var(--stroke);
+            touch-action: none;
+        }
+
+        .dpad {
+            display: grid;
+            grid-template-columns: repeat(3, 56px);
+            grid-template-rows: repeat(2, 48px);
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .dpad button {
+            border-radius: 14px;
+            border: 1px solid var(--stroke);
+            background: var(--glass-hi);
+            color: var(--ink);
+            font-size: 17px;
+            cursor: pointer;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .dpad button:active {
+            background: var(--surf-3);
+        }
+
+        .dpad .up {
+            grid-column: 2;
+        }
+
+        .dpad .left {
+            grid-column: 1;
+            grid-row: 2;
+        }
+
+        .dpad .down {
+            grid-column: 2;
+            grid-row: 2;
+        }
+
+        .dpad .right {
+            grid-column: 3;
+            grid-row: 2;
+        }
+
+        /* ── 2048 ── */
+        .g2048 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 9px;
+            padding: 9px;
+            border-radius: var(--r-md);
+            background: var(--surf-1);
+            border: 1px solid var(--stroke);
+            aspect-ratio: 1 / 1;
+            touch-action: none;
+        }
+
+        .t {
+            border-radius: 11px;
+            display: grid;
+            place-items: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            font-size: clamp(15px, 4.4vw, 26px);
+            background: var(--surf-2);
+            color: var(--ink);
+            transition: transform 0.12s ease-out;
+        }
+
+        .t.pop {
+            animation: pop 0.16s ease-out;
+        }
+
+        @keyframes pop {
+            0% {
+                transform: scale(0.7);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .t[data-v="2"] { background: var(--t2); }
+        .t[data-v="4"] { background: var(--t4); }
+        .t[data-v="8"] { background: var(--t8); }
+        .t[data-v="16"] { background: var(--t16); }
+        .t[data-v="32"] { background: var(--t32); }
+        .t[data-v="64"] { background: var(--t64); }
+        .t[data-v="128"] { background: var(--t128); }
+        .t[data-v="256"] { background: var(--t256); }
+        .t[data-v="512"] { background: var(--t512); }
+        .t[data-v="1024"] { background: var(--t1024); font-size: clamp(13px, 3.6vw, 22px); }
+        .t[data-v="2048"] { background: var(--accent-grad); color: var(--on-accent); font-size: clamp(13px, 3.6vw, 22px); }
+
+        /* ── memory ── */
+        .mem {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .mcard {
+            aspect-ratio: 1 / 1;
+            border-radius: 13px;
+            border: 1px solid var(--stroke);
+            background: var(--surf-2);
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+            font-size: clamp(22px, 6vw, 32px);
+            transition: transform 0.2s cubic-bezier(.2, .8, .2, 1), background 0.25s, border-color 0.25s, opacity 0.3s;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .mcard .face {
+            opacity: 0;
+            transition: opacity 0.12s;
+        }
+
+        .mcard.up .face,
+        .mcard.done .face {
+            opacity: 1;
+        }
+
+        .mcard.up {
+            background: var(--glass-hover);
+            border-color: var(--stroke-hi);
+            transform: scale(1.03);
+        }
+
+        .mcard.done {
+            background: var(--lime-soft);
+            border-color: var(--lime-line);
+            cursor: default;
+        }
+
+        .mcard:not(.up):not(.done):hover {
+            background: var(--surf-3);
+            transform: translateY(-2px);
+        }
+
+        /* ── tic tac toe ── */
+        .ttt {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .ttt button {
+            aspect-ratio: 1 / 1;
+            border-radius: 15px;
+            border: 1px solid var(--stroke);
+            background: var(--surf-2);
+            color: var(--ink);
+            font-family: 'Sora', sans-serif;
+            font-size: clamp(30px, 9vw, 48px);
+            font-weight: 800;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s, transform 0.2s;
+        }
+
+        .ttt button:hover:not(:disabled) {
+            background: var(--surf-3);
+            transform: translateY(-2px);
+        }
+
+        .ttt button:disabled {
+            cursor: default;
+        }
+
+        .ttt .x {
+            color: var(--cyan);
+        }
+
+        .ttt .o {
+            color: var(--fuchsia);
+        }
+
+        .ttt button.win {
+            background: var(--lime-soft);
+            border-color: var(--lime-line);
+        }
+
+        /* ── reaction ── */
+        .rt {
+            width: 100%;
+            aspect-ratio: 16 / 10;
+            border-radius: var(--r-md);
+            border: 1px solid var(--stroke);
+            background: var(--surf-1);
+            display: grid;
+            place-items: center;
+            text-align: center;
+            cursor: pointer;
+            padding: 24px;
+            transition: background 0.12s, border-color 0.12s;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .rt h3 {
+            font-family: 'Sora', sans-serif;
+            font-size: clamp(20px, 3.6vw, 28px);
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            margin-bottom: 8px;
+        }
+
+        .rt p {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .rt.waiting {
+            background: var(--amber-soft);
+            border-color: var(--amber-line);
+        }
+
+        .rt.go {
+            background: var(--lime-soft);
+            border-color: var(--lime-line);
+        }
+
+        .rt.go h3 {
+            color: var(--lime);
+        }
+
+        .rt.bad {
+            background: var(--rose-soft);
+            border-color: var(--rose-line);
+        }
+
+        .rt-log {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--faint);
+            text-align: center;
+        }
+
+        /* ── secret: Cube Rally ── */
+        .tab.secret {
+            background: var(--lime-soft);
+            border-color: var(--lime-line);
+            color: var(--lime);
+            animation: unlockPop 0.6s cubic-bezier(.2, 1.3, .4, 1);
+        }
+
+        .tab.secret[aria-selected="true"] {
+            background: var(--secret-grad);
+            color: var(--on-accent);
+            border-color: transparent;
+            box-shadow: 0 10px 30px -10px var(--glow-col);
+        }
+
+        @keyframes unlockPop {
+            0% {
+                transform: scale(0.4) rotate(-8deg);
+                opacity: 0;
+            }
+
+            70% {
+                transform: scale(1.12) rotate(2deg);
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .drive-wrap {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            aspect-ratio: 16 / 9;
+            border-radius: var(--r-md);
+            overflow: hidden;
+            border: 1px solid var(--stroke);
+            background: var(--stage-bg);
+        }
+
+        .drive-wrap canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            aspect-ratio: auto;
+            border: 0;
+            border-radius: 0;
+            background: transparent;
+        }
+
+        .drive-wrap:fullscreen {
+            max-width: none;
+            aspect-ratio: auto;
+            border-radius: 0;
+        }
+
+        .hud {
+            position: absolute;
+            inset: 14px 14px auto 14px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        .hud-item {
+            display: flex;
+            align-items: baseline;
+            gap: 7px;
+            padding: 7px 13px;
+            border-radius: var(--r-pill);
+            background: var(--panel);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--stroke);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .hud-item small {
+            font-family: 'Inter', sans-serif;
+            font-size: 10px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--faint);
+        }
+
+        .hud-item.time b {
+            color: var(--amber);
+        }
+
+        .hud-item.cubes b {
+            color: var(--lime);
+        }
+
+        .fs-btn {
+            position: absolute;
+            right: 14px;
+            bottom: 14px;
+            z-index: 4;
+            padding: 8px 14px;
+            border-radius: var(--r-pill);
+            background: var(--panel);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--stroke);
+            color: var(--ink);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .fs-btn:hover {
+            border-color: var(--stroke-hi);
+        }
+
+        .touch-pad {
+            position: absolute;
+            inset: auto 0 0 0;
+            display: none;
+            justify-content: space-between;
+            padding: 14px;
+            gap: 10px;
+            z-index: 4;
+        }
+
+        .touch-pad.on {
+            display: flex;
+        }
+
+        .touch-pad .grp {
+            display: flex;
+            gap: 10px;
+        }
+
+        .touch-pad button {
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            border: 1px solid var(--stroke);
+            background: var(--panel);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            color: var(--ink);
+            font-size: 19px;
+            -webkit-user-select: none;
+            user-select: none;
+            touch-action: none;
+        }
+
+        .touch-pad button:active {
+            background: var(--lime-soft);
+        }
+
+        .loading3d {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            place-content: center;
+            gap: 10px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 14px;
+            z-index: 6;
+        }
+
+        .spinner {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 3px solid var(--surf-3);
+            border-top-color: var(--lime);
+            margin: 0 auto;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .toast {
+            position: fixed;
+            left: 50%;
+            bottom: 28px;
+            transform: translate(-50%, 140%);
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 22px;
+            border-radius: var(--r-pill);
+            background: var(--toast-bg);
+            -webkit-backdrop-filter: blur(18px);
+            backdrop-filter: blur(18px);
+            border: 1px solid var(--lime-line);
+            box-shadow: 0 20px 50px -20px var(--glow-col);
+            font-size: 14px;
+            font-weight: 600;
+            transition: transform 0.5s cubic-bezier(.2, 1.1, .3, 1);
+            max-width: calc(100vw - 32px);
+        }
+
+        .toast.show {
+            transform: translate(-50%, 0);
+        }
+
+        .toast .k {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--lime);
+        }
+
+        footer {
+            border-top: 1px solid var(--stroke);
+            padding: 24px 0 40px;
+            text-align: center;
+            font-size: 13px;
+            color: var(--faint);
+        }
+
+        footer a {
+            color: var(--muted);
+            text-decoration: none;
+            border-bottom: 1px solid var(--lime-line);
+        }
+
+        footer a:hover {
+            color: var(--fuchsia);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            .mesh b,
+            .t.pop {
+                animation: none !important;
+            }
+
+            * {
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="mesh" aria-hidden="true">
+        <b class="m1"></b>
+        <b class="m2"></b>
+        <b class="m3"></b>
+    </div>
+
+    <div class="wrap top">
+        <div class="top-row">
+            <a class="back" href="index.html">← Back to the site</a>
+            <button class="theme-btn" id="theme-btn" type="button" aria-label="Switch to light theme">
+                <span class="ico-sun" aria-hidden="true">☀</span>
+                <span class="ico-moon" aria-hidden="true">☾</span>
+            </button>
+        </div>
+    </div>
+
+    <header class="wrap hero">
+        <span class="badge"><i aria-hidden="true"></i> Contact form offline</span>
+        <h1>Can't connect yet, <span class="grad-text">care for some games?</span></h1>
+        <p class="sub">
+            The "say hello" form isn't wired up yet — so here are <span id="game-count">five</span> games
+            instead, all built from scratch and playable right here. No downloads, no accounts,
+            no loading screens.
+        </p>
+    </header>
+
+    <div class="wrap">
+        <div class="tabs" role="tablist" aria-label="Pick a game">
+            <button class="tab" role="tab" data-game="snake" aria-selected="true">🐍 Snake</button>
+            <button class="tab" role="tab" data-game="g2048" aria-selected="false">🔢 2048</button>
+            <button class="tab" role="tab" data-game="memory" aria-selected="false">🧠 Memory</button>
+            <button class="tab" role="tab" data-game="ttt" aria-selected="false">⭕ Tic-Tac-Toe</button>
+            <button class="tab" role="tab" data-game="reaction" aria-selected="false">⚡ Reaction</button>
+            <button class="tab secret" role="tab" data-game="drive" aria-selected="false" hidden>🏎️ Cube Rally</button>
+        </div>
+
+        <section class="stage glass" id="stage" aria-live="polite"></section>
+    </div>
+
+    <footer>
+        <div class="wrap">
+            Built by <a href="index.html">Nikhil Kannankara</a> — Cupertino, CA ·
+            <a href="https://www.worldcubeassociation.org/persons/2026KANN01" target="_blank"
+                rel="noopener noreferrer">WCA 2026KANN01</a>
+        </div>
+    </footer>
+
+    <script>
+        (function () {
+            'use strict';
+
+            const stage = document.getElementById('stage');
+            const tabs = [...document.querySelectorAll('.tab')];
+
+            /* localStorage can throw (private mode, blocked cookies) — never let it break a game */
+            const store = {
+                get(k, d) {
+                    try {
+                        const v = localStorage.getItem('nk_' + k);
+                        return v === null ? d : JSON.parse(v);
+                    } catch (e) { return d; }
+                },
+                set(k, v) {
+                    try { localStorage.setItem('nk_' + k, JSON.stringify(v)); } catch (e) { /* ignore */ }
+                }
+            };
+
+            const el = (tag, cls, html) => {
+                const n = document.createElement(tag);
+                if (cls) n.className = cls;
+                if (html !== undefined) n.innerHTML = html;
+                return n;
+            };
+
+            /* ── theme ── */
+            const themeBtn = document.getElementById('theme-btn');
+            function currentTheme() {
+                return document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+            }
+            function applyTheme(t) {
+                if (t === 'light') document.documentElement.setAttribute('data-theme', 'light');
+                else document.documentElement.removeAttribute('data-theme');
+                try { localStorage.setItem('nk_theme', t); } catch (e) { /* ignore */ }
+                themeBtn.setAttribute('aria-label',
+                    t === 'light' ? 'Switch to dark theme' : 'Switch to light theme');
+                window.dispatchEvent(new CustomEvent('nk-theme', { detail: t }));
+            }
+            applyTheme(currentTheme());
+            themeBtn.addEventListener('click', () => {
+                applyTheme(currentTheme() === 'light' ? 'dark' : 'light');
+            });
+
+            /* read a themed custom property */
+            function cssVar(name) {
+                return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+            }
+
+            /* shared header builder: title + score pills + buttons */
+            function head(title, hint) {
+                const h = el('div', 'g-head');
+                h.appendChild(el('div', 'g-title', title));
+                const wrapEl = el('div');
+                wrapEl.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;align-items:center';
+                h.appendChild(wrapEl);
+                const hintEl = el('div', 'g-hint', hint);
+                return { node: h, slot: wrapEl, hint: hintEl };
+            }
+
+            function pill(label, value) {
+                const p = el('div', 'pill');
+                p.appendChild(el('span', null, label));
+                const b = el('b', null, value);
+                p.appendChild(b);
+                return { node: p, set: v => { b.textContent = v; } };
+            }
+
+            /* swipe helper for touch */
+            function onSwipe(node, cb) {
+                let sx = 0, sy = 0, active = false;
+                node.addEventListener('pointerdown', e => { active = true; sx = e.clientX; sy = e.clientY; });
+                node.addEventListener('pointerup', e => {
+                    if (!active) return;
+                    active = false;
+                    const dx = e.clientX - sx, dy = e.clientY - sy;
+                    if (Math.abs(dx) < 24 && Math.abs(dy) < 24) return;
+                    cb(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up'));
+                });
+                node.addEventListener('pointercancel', () => { active = false; });
+            }
+
+            /* ════════════ SNAKE ════════════ */
+            function snake() {
+                const N = 17;
+                const cleanup = [];
+                const h = head('Snake', 'Arrow keys or WASD · swipe or use the pad on touch · Space to pause');
+                const score = pill('Score', '0');
+                const best = pill('Best', store.get('snake_best', 0));
+                const restart = el('button', 'btn', '↻ Restart');
+                h.slot.append(score.node, best.node, restart);
+
+                const area = el('div', 'play-area');
+                const wrapEl = el('div', 'board-wrap');
+                const canvas = el('canvas');
+                const over = el('div', 'overlay');
+                over.hidden = true;
+                wrapEl.append(canvas, over);
+
+                const pad = el('div', 'dpad');
+                pad.innerHTML = '<button class="up" aria-label="Up">▲</button>' +
+                    '<button class="left" aria-label="Left">◀</button>' +
+                    '<button class="down" aria-label="Down">▼</button>' +
+                    '<button class="right" aria-label="Right">▶</button>';
+                area.append(wrapEl, pad);
+                stage.append(h.node, h.hint, area);
+
+                const ctx = canvas.getContext('2d');
+                let cell = 0;
+                function fit() {
+                    const dpr = Math.min(window.devicePixelRatio, 2);
+                    const w = canvas.clientWidth || 400;
+                    canvas.width = w * dpr;
+                    canvas.height = w * dpr;
+                    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                    cell = w / N;
+                    draw();
+                }
+
+                let body, dir, next, food, dead, paused, sc, acc, lastT, speed, started;
+
+                function reset() {
+                    body = [{ x: 8, y: 8 }, { x: 7, y: 8 }, { x: 6, y: 8 }];
+                    dir = { x: 1, y: 0 };
+                    next = { x: 1, y: 0 };
+                    dead = false;
+                    paused = false;
+                    started = false;
+                    sc = 0;
+                    acc = 0;
+                    speed = 125;
+                    lastT = 0;
+                    score.set(0);
+                    placeFood();
+                    ready();
+                }
+
+                /* wait for the first input — otherwise it hits the wall before you look up */
+                function ready() {
+                    over.innerHTML = '';
+                    const btn = el('button', 'btn primary', 'Start');
+                    btn.onclick = begin;
+                    over.append(
+                        el('h3', null, 'Ready?'),
+                        el('p', null, 'Arrow keys, WASD, swipe or the pad below.'),
+                        btn
+                    );
+                    over.hidden = false;
+                }
+
+                function begin() {
+                    if (dead) return;
+                    started = true;
+                    acc = 0;
+                    over.hidden = true;
+                }
+
+                function placeFood() {
+                    const free = [];
+                    for (let x = 0; x < N; x++)
+                        for (let y = 0; y < N; y++)
+                            if (!body.some(s => s.x === x && s.y === y)) free.push({ x, y });
+                    food = free[Math.floor(Math.random() * free.length)] || { x: 0, y: 0 };
+                }
+
+                function step() {
+                    dir = next;
+                    const head2 = { x: body[0].x + dir.x, y: body[0].y + dir.y };
+                    if (head2.x < 0 || head2.y < 0 || head2.x >= N || head2.y >= N ||
+                        body.some(s => s.x === head2.x && s.y === head2.y)) {
+                        return gameOver();
+                    }
+                    body.unshift(head2);
+                    if (head2.x === food.x && head2.y === food.y) {
+                        sc += 10;
+                        score.set(sc);
+                        speed = Math.max(62, 125 - Math.floor(sc / 40) * 6);
+                        placeFood();
+                    } else {
+                        body.pop();
+                    }
+                }
+
+                function gameOver() {
+                    dead = true;
+                    if (sc > store.get('snake_best', 0)) {
+                        store.set('snake_best', sc);
+                        best.set(sc);
+                    }
+                    over.innerHTML = '';
+                    over.append(
+                        el('h3', null, 'Game over'),
+                        el('p', null, 'You scored ' + sc + '. Press Enter or tap restart.'),
+                        (() => { const b = el('button', 'btn primary', 'Play again'); b.onclick = reset; return b; })()
+                    );
+                    over.hidden = false;
+                }
+
+                function rr(x, y, w, hh, r, fill) {
+                    ctx.fillStyle = fill;
+                    ctx.beginPath();
+                    ctx.roundRect ? ctx.roundRect(x, y, w, hh, r) : ctx.rect(x, y, w, hh);
+                    ctx.fill();
+                }
+
+                let pal = {};
+                function readPal() {
+                    pal = {
+                        food: cssVar('--snake-food') || '#FBBF24',
+                        head: cssVar('--snake-head') || '#BEF264',
+                        r: parseInt(cssVar('--snake-r'), 10) || 52,
+                        g: parseInt(cssVar('--snake-g'), 10) || 211,
+                        b: parseInt(cssVar('--snake-b'), 10) || 153
+                    };
+                }
+                readPal();
+                const onThemeSnake = () => { readPal(); draw(); };
+                window.addEventListener('nk-theme', onThemeSnake);
+                cleanup.push(() => window.removeEventListener('nk-theme', onThemeSnake));
+
+                function draw() {
+                    if (!cell) return;
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    const p = cell * 0.08;
+                    rr(food.x * cell + p, food.y * cell + p, cell - p * 2, cell - p * 2, cell * 0.3, pal.food);
+                    body.forEach((s, i) => {
+                        const t = i / Math.max(body.length - 1, 1);
+                        const col = i === 0 ? pal.head : 'rgba(' + pal.r + ',' + pal.g + ',' + pal.b + ','
+                            + (1 - t * 0.6).toFixed(2) + ')';
+                        rr(s.x * cell + p, s.y * cell + p, cell - p * 2, cell - p * 2, cell * 0.28, col);
+                    });
+                }
+
+                let raf;
+                function loop(t) {
+                    raf = requestAnimationFrame(loop);
+                    if (!lastT) lastT = t;
+                    const dt = t - lastT;
+                    lastT = t;
+                    if (dead || paused || !started) return;
+                    acc += dt;
+                    while (acc >= speed) {
+                        acc -= speed;
+                        step();
+                        if (dead) break;
+                    }
+                    draw();
+                }
+
+                function turn(d) {
+                    const map = { up: { x: 0, y: -1 }, down: { x: 0, y: 1 }, left: { x: -1, y: 0 }, right: { x: 1, y: 0 } };
+                    const n = map[d];
+                    if (!n || dead) return;
+                    if (!started) begin();
+                    if (n.x === -dir.x && n.y === -dir.y) return; /* no instant reverse */
+                    next = n;
+                }
+
+                const keys = {
+                    ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right',
+                    w: 'up', s: 'down', a: 'left', d: 'right',
+                    W: 'up', S: 'down', A: 'left', D: 'right'
+                };
+                const onKey = e => {
+                    if (keys[e.key]) {
+                        e.preventDefault();
+                        turn(keys[e.key]);
+                    } else if (e.key === ' ') {
+                        e.preventDefault();
+                        if (dead) return;
+                        if (!started) begin(); else paused = !paused;
+                    } else if (e.key === 'Enter' && dead) {
+                        reset();
+                    }
+                };
+                window.addEventListener('keydown', onKey);
+                cleanup.push(() => window.removeEventListener('keydown', onKey));
+
+                onSwipe(canvas, turn);
+                pad.querySelectorAll('button').forEach(b =>
+                    b.addEventListener('click', () => turn(b.className)));
+                restart.onclick = reset;
+
+                const ro = new ResizeObserver(fit);
+                ro.observe(canvas);
+                cleanup.push(() => ro.disconnect());
+
+                reset();
+                fit();
+                raf = requestAnimationFrame(loop);
+                cleanup.push(() => cancelAnimationFrame(raf));
+
+                return () => cleanup.forEach(f => f());
+            }
+
+            /* ════════════ 2048 ════════════ */
+            function g2048() {
+                const cleanup = [];
+                const h = head('2048', 'Arrow keys or WASD · swipe on touch · merge matching tiles to reach 2048');
+                const score = pill('Score', '0');
+                const best = pill('Best', store.get('2048_best', 0));
+                const restart = el('button', 'btn', '↻ New game');
+                h.slot.append(score.node, best.node, restart);
+
+                const area = el('div', 'play-area');
+                const wrapEl = el('div', 'board-wrap');
+                const grid = el('div', 'g2048');
+                const over = el('div', 'overlay');
+                over.hidden = true;
+                wrapEl.append(grid, over);
+                area.append(wrapEl);
+                stage.append(h.node, h.hint, area);
+
+                const cells = [];
+                for (let i = 0; i < 16; i++) {
+                    const t = el('div', 't');
+                    grid.appendChild(t);
+                    cells.push(t);
+                }
+
+                let b, sc, won;
+
+                function reset() {
+                    b = new Array(16).fill(0);
+                    sc = 0;
+                    won = false;
+                    score.set(0);
+                    over.hidden = true;
+                    spawn();
+                    spawn();
+                    render();
+                }
+
+                function spawn() {
+                    const free = [];
+                    b.forEach((v, i) => { if (!v) free.push(i); });
+                    if (!free.length) return;
+                    b[free[Math.floor(Math.random() * free.length)]] = Math.random() < 0.9 ? 2 : 4;
+                }
+
+                function render(popped) {
+                    b.forEach((v, i) => {
+                        const c = cells[i];
+                        c.textContent = v || '';
+                        if (v) c.dataset.v = v; else delete c.dataset.v;
+                        if (popped && popped.has(i)) {
+                            c.classList.remove('pop');
+                            void c.offsetWidth;
+                            c.classList.add('pop');
+                        }
+                    });
+                    score.set(sc);
+                }
+
+                /* slide one line left, returning the new line + points scored */
+                function slide(line) {
+                    const vals = line.filter(v => v);
+                    const out = [];
+                    let pts = 0;
+                    for (let i = 0; i < vals.length; i++) {
+                        if (vals[i] === vals[i + 1]) {
+                            out.push(vals[i] * 2);
+                            pts += vals[i] * 2;
+                            i++;
+                        } else {
+                            out.push(vals[i]);
+                        }
+                    }
+                    while (out.length < 4) out.push(0);
+                    return { out, pts };
+                }
+
+                const LINES = {
+                    left: r => [0, 1, 2, 3].map(i => r * 4 + i),
+                    right: r => [3, 2, 1, 0].map(i => r * 4 + i),
+                    up: c => [0, 1, 2, 3].map(i => i * 4 + c),
+                    down: c => [3, 2, 1, 0].map(i => i * 4 + c)
+                };
+
+                function move(dir) {
+                    const idxFn = LINES[dir];
+                    if (!idxFn) return;
+                    let moved = false, gained = 0;
+                    const next = b.slice();
+                    for (let k = 0; k < 4; k++) {
+                        const idx = idxFn(k);
+                        const line = idx.map(i => b[i]);
+                        const { out, pts } = slide(line);
+                        gained += pts;
+                        idx.forEach((i, j) => {
+                            if (next[i] !== out[j]) moved = true;
+                            next[i] = out[j];
+                        });
+                    }
+                    if (!moved) return;
+                    b = next;
+                    sc += gained;
+                    const before = new Set();
+                    b.forEach((v, i) => { if (!v) before.add(i); });
+                    spawn();
+                    const popped = new Set();
+                    b.forEach((v, i) => { if (v && before.has(i)) popped.add(i); });
+                    render(popped);
+
+                    if (sc > store.get('2048_best', 0)) {
+                        store.set('2048_best', sc);
+                        best.set(sc);
+                    }
+                    if (!won && b.includes(2048)) {
+                        won = true;
+                        finish('You hit 2048! 🎉', 'Score ' + sc + '. Keep going or start fresh.', 'Keep playing', () => { over.hidden = true; });
+                    } else if (!canMove()) {
+                        finish('No moves left', 'Final score ' + sc + '.', 'New game', reset);
+                    }
+                }
+
+                function canMove() {
+                    if (b.includes(0)) return true;
+                    for (let r = 0; r < 4; r++)
+                        for (let c = 0; c < 4; c++) {
+                            const v = b[r * 4 + c];
+                            if (c < 3 && v === b[r * 4 + c + 1]) return true;
+                            if (r < 3 && v === b[(r + 1) * 4 + c]) return true;
+                        }
+                    return false;
+                }
+
+                function finish(title, msg, label, fn) {
+                    over.innerHTML = '';
+                    const btn = el('button', 'btn primary', label);
+                    btn.onclick = fn;
+                    over.append(el('h3', null, title), el('p', null, msg), btn);
+                    over.hidden = false;
+                }
+
+                const keys = {
+                    ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'up', ArrowDown: 'down',
+                    a: 'left', d: 'right', w: 'up', s: 'down',
+                    A: 'left', D: 'right', W: 'up', S: 'down'
+                };
+                const onKey = e => {
+                    if (!keys[e.key]) return;
+                    e.preventDefault();
+                    move(keys[e.key]);
+                };
+                window.addEventListener('keydown', onKey);
+                cleanup.push(() => window.removeEventListener('keydown', onKey));
+
+                onSwipe(grid, move);
+                restart.onclick = reset;
+                reset();
+
+                return () => cleanup.forEach(f => f());
+            }
+
+            /* ════════════ MEMORY ════════════ */
+            function memory() {
+                const FACES = ['🟧', '🟦', '🟩', '🟨', '🟥', '⬜', '🔺', '🔷'];
+                const h = head('Memory Match', 'Flip two tiles at a time and pair up all eight puzzles.');
+                const moves = pill('Moves', '0');
+                const best = pill('Best', store.get('mem_best', '—'));
+                const restart = el('button', 'btn', '↻ Shuffle');
+                h.slot.append(moves.node, best.node, restart);
+
+                const area = el('div', 'play-area');
+                const wrapEl = el('div', 'board-wrap');
+                const grid = el('div', 'mem');
+                const over = el('div', 'overlay');
+                over.hidden = true;
+                wrapEl.append(grid, over);
+                area.append(wrapEl);
+                stage.append(h.node, h.hint, area);
+
+                let deck, open, mv, matched, locked;
+
+                function reset() {
+                    deck = FACES.concat(FACES)
+                        .map(f => ({ f, s: Math.random() }))
+                        .sort((a, z) => a.s - z.s)
+                        .map(o => o.f);
+                    open = [];
+                    mv = 0;
+                    matched = 0;
+                    locked = false;
+                    moves.set(0);
+                    over.hidden = true;
+                    grid.innerHTML = '';
+                    deck.forEach((face, i) => {
+                        const c = el('button', 'mcard');
+                        c.type = 'button';
+                        c.setAttribute('aria-label', 'Tile ' + (i + 1));
+                        c.appendChild(el('span', 'face', face));
+                        c.addEventListener('click', () => flip(c, i));
+                        grid.appendChild(c);
+                    });
+                }
+
+                function flip(card, i) {
+                    if (locked || card.classList.contains('up') || card.classList.contains('done')) return;
+                    card.classList.add('up');
+                    open.push({ card, i });
+                    if (open.length < 2) return;
+
+                    mv++;
+                    moves.set(mv);
+                    const [a, bb] = open;
+                    if (deck[a.i] === deck[bb.i]) {
+                        a.card.classList.remove('up');
+                        bb.card.classList.remove('up');
+                        a.card.classList.add('done');
+                        bb.card.classList.add('done');
+                        open = [];
+                        matched++;
+                        if (matched === FACES.length) win();
+                    } else {
+                        locked = true;
+                        setTimeout(() => {
+                            a.card.classList.remove('up');
+                            bb.card.classList.remove('up');
+                            open = [];
+                            locked = false;
+                        }, 650);
+                    }
+                }
+
+                function win() {
+                    const prev = store.get('mem_best', null);
+                    if (prev === null || mv < prev) {
+                        store.set('mem_best', mv);
+                        best.set(mv);
+                    }
+                    over.innerHTML = '';
+                    const btn = el('button', 'btn primary', 'Shuffle again');
+                    btn.onclick = reset;
+                    over.append(
+                        el('h3', null, 'All matched! 🎉'),
+                        el('p', null, 'You cleared the board in ' + mv + ' moves.'),
+                        btn
+                    );
+                    over.hidden = false;
+                }
+
+                restart.onclick = reset;
+                reset();
+                return () => { };
+            }
+
+            /* ════════════ TIC-TAC-TOE ════════════ */
+            function ttt() {
+                const h = head('Tic-Tac-Toe', 'You are X. The computer plays a near-perfect game — a draw is a good result.');
+                const rec = store.get('ttt_rec', { w: 0, l: 0, d: 0 });
+                const tally = pill('W / D / L', rec.w + ' / ' + rec.d + ' / ' + rec.l);
+                const restart = el('button', 'btn', '↻ New round');
+                h.slot.append(tally.node, restart);
+
+                const area = el('div', 'play-area');
+                const wrapEl = el('div', 'board-wrap');
+                const grid = el('div', 'ttt');
+                const over = el('div', 'overlay');
+                over.hidden = true;
+                wrapEl.append(grid, over);
+                area.append(wrapEl);
+                stage.append(h.node, h.hint, area);
+
+                const WINS = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
+                let b, done, cells = [];
+
+                function reset() {
+                    b = new Array(9).fill('');
+                    done = false;
+                    over.hidden = true;
+                    grid.innerHTML = '';
+                    cells = [];
+                    for (let i = 0; i < 9; i++) {
+                        const c = el('button');
+                        c.type = 'button';
+                        c.setAttribute('aria-label', 'Square ' + (i + 1));
+                        c.addEventListener('click', () => play(i));
+                        grid.appendChild(c);
+                        cells.push(c);
+                    }
+                }
+
+                function winner(board) {
+                    for (const line of WINS) {
+                        const [x, y, z] = line;
+                        if (board[x] && board[x] === board[y] && board[y] === board[z]) return { who: board[x], line };
+                    }
+                    return board.includes('') ? null : { who: 'draw', line: [] };
+                }
+
+                function render() {
+                    b.forEach((v, i) => {
+                        cells[i].textContent = v;
+                        cells[i].className = v === 'X' ? 'x' : v === 'O' ? 'o' : '';
+                        cells[i].disabled = !!v || done;
+                    });
+                }
+
+                function minimax(board, isAI) {
+                    const w = winner(board);
+                    if (w) return { score: w.who === 'O' ? 1 : w.who === 'X' ? -1 : 0 };
+                    let bestMove = null;
+                    let bestScore = isAI ? -2 : 2;
+                    for (let i = 0; i < 9; i++) {
+                        if (board[i]) continue;
+                        board[i] = isAI ? 'O' : 'X';
+                        const s = minimax(board, !isAI).score;
+                        board[i] = '';
+                        if (isAI ? s > bestScore : s < bestScore) {
+                            bestScore = s;
+                            bestMove = i;
+                        }
+                    }
+                    return { score: bestScore, move: bestMove };
+                }
+
+                function play(i) {
+                    if (done || b[i]) return;
+                    b[i] = 'X';
+                    render();
+                    let w = winner(b);
+                    if (w) return finish(w);
+
+                    /* 12% of the time it plays a random legal move, so winning is actually possible */
+                    const free = b.map((v, idx) => v ? -1 : idx).filter(v => v >= 0);
+                    const mv = Math.random() < 0.12
+                        ? free[Math.floor(Math.random() * free.length)]
+                        : minimax(b.slice(), true).move;
+                    if (mv !== null && mv !== undefined) b[mv] = 'O';
+                    render();
+                    w = winner(b);
+                    if (w) finish(w);
+                }
+
+                function finish(w) {
+                    done = true;
+                    w.line.forEach(i => cells[i].classList.add('win'));
+                    render();
+                    if (w.who === 'X') rec.w++;
+                    else if (w.who === 'O') rec.l++;
+                    else rec.d++;
+                    store.set('ttt_rec', rec);
+                    tally.set(rec.w + ' / ' + rec.d + ' / ' + rec.l);
+
+                    const msg = w.who === 'X' ? 'You win! 🎉' : w.who === 'O' ? 'Computer wins' : "It's a draw";
+                    over.innerHTML = '';
+                    const btn = el('button', 'btn primary', 'Play again');
+                    btn.onclick = reset;
+                    over.append(el('h3', null, msg), el('p', null, 'W ' + rec.w + ' · D ' + rec.d + ' · L ' + rec.l), btn);
+                    over.hidden = false;
+                }
+
+                restart.onclick = reset;
+                reset();
+                render();
+                return () => { };
+            }
+
+            /* ════════════ REACTION ════════════ */
+            function reaction() {
+                const cleanup = [];
+                const h = head('Reaction Time', 'Wait for green, then click as fast as you can. Clicking early resets the round.');
+                const last = pill('Last', '—');
+                const best = pill('Best', store.get('rt_best', '—'));
+                h.slot.append(last.node, best.node);
+
+                const area = el('div', 'play-area');
+                const padEl = el('div', 'rt');
+                padEl.setAttribute('role', 'button');
+                padEl.tabIndex = 0;
+                const log = el('div', 'rt-log', '');
+                area.append(padEl, log);
+                stage.append(h.node, h.hint, area);
+
+                let state = 'idle', timer = null, startedAt = 0;
+                const runs = [];
+
+                function paint(title, sub, cls) {
+                    padEl.className = 'rt' + (cls ? ' ' + cls : '');
+                    padEl.innerHTML = '';
+                    padEl.append(el('h3', null, title), el('p', null, sub));
+                }
+
+                paint('Click to start', 'Then wait for the green.', '');
+
+                function arm() {
+                    state = 'waiting';
+                    paint('Wait for it…', 'Click the moment it turns green.', 'waiting');
+                    timer = setTimeout(() => {
+                        state = 'go';
+                        startedAt = performance.now();
+                        paint('GO!', 'Click now.', 'go');
+                    }, 1200 + Math.random() * 3000);
+                }
+
+                function hit() {
+                    if (state === 'idle') return arm();
+                    if (state === 'waiting') {
+                        clearTimeout(timer);
+                        state = 'idle';
+                        paint('Too soon!', 'You jumped the gun. Click to try again.', 'bad');
+                        return;
+                    }
+                    if (state === 'go') {
+                        const ms = Math.round(performance.now() - startedAt);
+                        state = 'idle';
+                        last.set(ms + 'ms');
+                        const prev = store.get('rt_best', null);
+                        if (prev === null || ms < prev) {
+                            store.set('rt_best', ms);
+                            best.set(ms + 'ms');
+                        }
+                        runs.unshift(ms);
+                        log.textContent = 'recent: ' + runs.slice(0, 6).map(m => m + 'ms').join('  ·  ');
+                        paint(ms + 'ms', ms < 250 ? 'Seriously quick. Click to go again.' : 'Click to go again.', '');
+                    }
+                }
+
+                padEl.addEventListener('click', hit);
+                const onKey = e => {
+                    if ((e.key === ' ' || e.key === 'Enter') && document.activeElement === padEl) {
+                        e.preventDefault();
+                        hit();
+                    }
+                };
+                window.addEventListener('keydown', onKey);
+                cleanup.push(() => {
+                    window.removeEventListener('keydown', onKey);
+                    clearTimeout(timer);
+                });
+
+                return () => cleanup.forEach(f => f());
+            }
+
+            /* ════════════ SECRET: CUBE RALLY ════════════ */
+            let threeLoader = null;
+            function loadThree() {
+                if (window.THREE) return Promise.resolve();
+                if (threeLoader) return threeLoader;
+                threeLoader = new Promise((res, rej) => {
+                    const sc = document.createElement('script');
+                    sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+                    sc.onload = () => res();
+                    sc.onerror = () => rej(new Error('Could not load the 3D engine'));
+                    document.head.appendChild(sc);
+                });
+                return threeLoader;
+            }
+
+            function drive() {
+                let killed = false;
+                const cleanup = [];
+
+                const h = head('Cube Rally',
+                    'WASD or arrows to drive · Space handbrake · R resets the car · collect all 14 cubes before the clock runs out.');
+                const best = pill('Best', store.get('rally_best', '—'));
+                const restart = el('button', 'btn', '↻ Restart');
+                h.slot.append(best.node, restart);
+
+                const area = el('div', 'play-area');
+                const wrapEl = el('div', 'drive-wrap');
+                const loading = el('div', 'loading3d',
+                    '<div class="spinner"></div><div>Loading the 3D engine…</div>');
+                wrapEl.appendChild(loading);
+                area.appendChild(wrapEl);
+                stage.append(h.node, h.hint, area);
+
+                restart.disabled = true;
+
+                loadThree().then(() => {
+                    if (killed) return;
+                    loading.remove();
+                    boot();
+                }).catch(err => {
+                    if (killed) return;
+                    loading.innerHTML = '';
+                    loading.append(
+                        el('div', null, '⚠️ ' + err.message),
+                        el('div', null, 'Check your connection and reload.')
+                    );
+                });
+
+                function boot() {
+                    const T = window.THREE;
+
+                    /* ── HUD ── */
+                    const hud = el('div', 'hud');
+                    const hTime = el('div', 'hud-item time', '<small>Time</small><b>75.0</b>');
+                    const hCubes = el('div', 'hud-item cubes', '<small>Cubes</small><b>0 / 14</b>');
+                    const hSpeed = el('div', 'hud-item', '<small>km/h</small><b>0</b>');
+                    hud.append(hTime, hCubes, hSpeed);
+                    const timeVal = hTime.querySelector('b');
+                    const cubeVal = hCubes.querySelector('b');
+                    const speedVal = hSpeed.querySelector('b');
+
+                    const over = el('div', 'overlay');
+                    over.hidden = true;
+
+                    const fsBtn = el('button', 'fs-btn', '⛶ Fullscreen');
+                    fsBtn.onclick = () => {
+                        if (document.fullscreenElement) document.exitFullscreen();
+                        else if (wrapEl.requestFullscreen) wrapEl.requestFullscreen();
+                    };
+
+                    const pad = el('div', 'touch-pad');
+                    pad.innerHTML =
+                        '<div class="grp"><button data-k="left">◀</button><button data-k="right">▶</button></div>' +
+                        '<div class="grp"><button data-k="brake">▼</button><button data-k="gas">▲</button></div>';
+                    if (window.matchMedia('(pointer: coarse)').matches) pad.classList.add('on');
+
+                    wrapEl.append(hud, fsBtn, pad, over);
+
+                    /* ── renderer / scene ── */
+                    const renderer = new T.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+                    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+                    renderer.shadowMap.enabled = true;
+                    renderer.shadowMap.type = T.PCFSoftShadowMap;
+                    wrapEl.appendChild(renderer.domElement);
+
+                    /* ── two worlds: night forest and daylight meadow ── */
+                    const PAL = {
+                        dark: {
+                            fog: 0x0B1A2E, bg: 0x081426,
+                            sky: ['#02050C', '#071326', '#0E2A4A', '#1E5082', '#0A1C33'],
+                            groundBase: '#0E1A2E', groundLine: 'rgba(56,189,248,0.30)',
+                            wall: 0x16263D, ramp: 0x2563EB, pillar: 0x1B3350, cap: 0x67E8F9,
+                            stripA: 0x67E8F9, stripB: 0x60A5FA,
+                            skyline: [0x0F2038, 0x132840, 0x0C1A2E],
+                            crate: 0x6B4A2A, crate2: 0x8A6134,
+                            trunk: 0x3A2A22, leafA: 0x1E7A55, leafB: 0x2BA06C,
+                            car: 0x38BDF8, cabin: 0x07121F, ring: 0x38BDF8,
+                            hemiSky: 0x38BDF8, hemiGround: 0x070D1A, hemi: 0.85, sun: 1.0
+                        },
+                        light: {
+                            fog: 0xD6E6F5, bg: 0xDCEAF7,
+                            sky: ['#6FAEE4', '#A3D0EE', '#CBE4F6', '#EAF3FB', '#DCE9F4'],
+                            groundBase: '#E3EDF7', groundLine: 'rgba(3,105,161,0.24)',
+                            wall: 0xB4C6DA, ramp: 0x1D4ED8, pillar: 0xA6BBD1, cap: 0x0E7490,
+                            stripA: 0x0E7490, stripB: 0x1D4ED8,
+                            skyline: [0xC3D4E6, 0xB0C4DA, 0xCDDCEB],
+                            crate: 0xB98A4F, crate2: 0xD1A469,
+                            trunk: 0x6B4A33, leafA: 0x15803D, leafB: 0x22A35C,
+                            car: 0x0369A1, cabin: 0xE8F0F8, ring: 0x0369A1,
+                            hemiSky: 0xDCEAF7, hemiGround: 0xA8B9CE, hemi: 1.05, sun: 1.15
+                        }
+                    };
+                    let P = PAL[currentTheme()];
+
+                    const scene = new T.Scene();
+                    scene.background = new T.Color(P.bg);
+                    scene.fog = new T.Fog(P.fog, 60, 185);
+
+                    const camera = new T.PerspectiveCamera(56, 16 / 9, 0.1, 400);
+                    camera.position.set(0, 8, -14);
+
+                    function resize() {
+                        const w = wrapEl.clientWidth || 800;
+                        const hh = wrapEl.clientHeight || 450;
+                        renderer.setSize(w, hh, false);
+                        camera.aspect = w / hh;
+                        camera.updateProjectionMatrix();
+                    }
+                    const ro = new ResizeObserver(resize);
+                    ro.observe(wrapEl);
+                    cleanup.push(() => ro.disconnect());
+                    resize();
+
+                    const hemi = new T.HemisphereLight(P.hemiSky, P.hemiGround, P.hemi);
+                    scene.add(hemi);
+                    const sun = new T.DirectionalLight(0xFFFFFF, P.sun);
+                    sun.position.set(34, 48, 22);
+                    sun.castShadow = true;
+                    sun.shadow.mapSize.set(1024, 1024);
+                    sun.shadow.camera.near = 1;
+                    sun.shadow.camera.far = 160;
+                    sun.shadow.camera.left = -62;
+                    sun.shadow.camera.right = 62;
+                    sun.shadow.camera.top = 62;
+                    sun.shadow.camera.bottom = -62;
+                    scene.add(sun);
+                    scene.add(sun.target);
+
+                    /* ── sky dome: a flat background colour is what made this feel empty ── */
+                    function skyTex() {
+                        const c = document.createElement('canvas');
+                        c.width = 8;
+                        c.height = 256;
+                        const g = c.getContext('2d');
+                        const grd = g.createLinearGradient(0, 0, 0, 256);
+                        [0, 0.42, 0.72, 0.9, 1].forEach((stop, i) => grd.addColorStop(stop, P.sky[i]));
+                        g.fillStyle = grd;
+                        g.fillRect(0, 0, 8, 256);
+                        return new T.CanvasTexture(c);
+                    }
+                    const skyMat = new T.MeshBasicMaterial({ map: skyTex(), side: T.BackSide, fog: false });
+                    const sky = new T.Mesh(new T.SphereGeometry(195, 32, 18), skyMat);
+                    scene.add(sky);
+
+                    /* ── ground ── */
+                    const ARENA = 54;
+                    function gridTex() {
+                        const c = document.createElement('canvas');
+                        c.width = c.height = 128;
+                        const g = c.getContext('2d');
+                        g.fillStyle = P.groundBase;
+                        g.fillRect(0, 0, 128, 128);
+                        g.strokeStyle = P.groundLine;
+                        g.lineWidth = 3;
+                        g.strokeRect(0, 0, 128, 128);
+                        const t = new T.CanvasTexture(c);
+                        t.wrapS = t.wrapT = T.RepeatWrapping;
+                        t.repeat.set(36, 36);
+                        t.anisotropy = 4;
+                        return t;
+                    }
+                    const groundMat = new T.MeshStandardMaterial({ map: gridTex(), roughness: 0.96, metalness: 0 });
+                    const ground = new T.Mesh(new T.PlaneGeometry(ARENA * 2.2, ARENA * 2.2), groundMat);
+                    ground.rotation.x = -Math.PI / 2;
+                    ground.receiveShadow = true;
+                    scene.add(ground);
+
+                    /* ── walls ── */
+                    const wallMat = new T.MeshStandardMaterial({ color: P.wall, roughness: 0.7 });
+                    const wallGeo = new T.BoxGeometry(ARENA * 2, 2.4, 1.4);
+                    [[0, -ARENA, 0], [0, ARENA, 0], [-ARENA, 0, Math.PI / 2], [ARENA, 0, Math.PI / 2]].forEach(([x, z, ry]) => {
+                        const w = new T.Mesh(wallGeo, wallMat);
+                        w.position.set(x, 1.2, z);
+                        w.rotation.y = ry || 0;
+                        w.castShadow = true;
+                        w.receiveShadow = true;
+                        scene.add(w);
+                    });
+
+                    /* ── ramps (also drive the height field) ── */
+                    const RAMPS = [
+                        { x: 16, z: -14, w: 11, d: 16, h: 3.4, axis: 'z', sign: 1 },
+                        { x: -20, z: 12, w: 11, d: 16, h: 3.0, axis: 'z', sign: -1 },
+                        { x: -6, z: -30, w: 16, d: 11, h: 3.2, axis: 'x', sign: 1 },
+                        { x: 28, z: 24, w: 14, d: 11, h: 2.6, axis: 'x', sign: -1 }
+                    ];
+                    const rampMat = new T.MeshStandardMaterial({ color: P.ramp, roughness: 0.55, metalness: 0.1 });
+                    RAMPS.forEach(r => {
+                        const run = r.axis === 'z' ? r.d : r.w;
+                        const ang = Math.atan2(r.h, run);
+                        const len = Math.sqrt(run * run + r.h * r.h);
+                        const geo = r.axis === 'z'
+                            ? new T.BoxGeometry(r.w, 0.4, len)
+                            : new T.BoxGeometry(len, 0.4, r.d);
+                        const m = new T.Mesh(geo, rampMat);
+                        /* drop the plate by half its thickness so its TOP face
+                           matches the height field the car drives on */
+                        m.position.set(r.x, r.h / 2 - 0.2 * Math.cos(ang), r.z);
+                        if (r.axis === 'z') m.rotation.x = -ang * r.sign;
+                        else m.rotation.z = ang * r.sign;
+                        m.castShadow = true;
+                        m.receiveShadow = true;
+                        scene.add(m);
+                    });
+
+                    function groundAt(x, z) {
+                        let best2 = 0;
+                        for (const r of RAMPS) {
+                            if (Math.abs(x - r.x) > r.w / 2 || Math.abs(z - r.z) > r.d / 2) continue;
+                            let t = r.axis === 'z'
+                                ? (z - (r.z - r.d / 2)) / r.d
+                                : (x - (r.x - r.w / 2)) / r.w;
+                            if (r.sign < 0) t = 1 - t;
+                            best2 = Math.max(best2, r.h * Math.max(0, Math.min(1, t)));
+                        }
+                        return best2;
+                    }
+
+                    /* ── everything solid lives here; the car is pushed out of each one ── */
+                    const OBSTACLES = [];
+
+                    /* pillars */
+                    const pillarMat = new T.MeshStandardMaterial({ color: P.pillar, roughness: 0.6 });
+                    const pillarGeo = new T.BoxGeometry(2.4, 6, 2.4);
+                    const capMat = new T.MeshBasicMaterial({ color: P.cap });
+                    const capGeo = new T.BoxGeometry(2.7, 0.22, 2.7);
+                    [[-34, -34], [34, -34], [-34, 34], [34, 34], [0, 40], [0, -40],
+                    [-44, 0], [44, 0]].forEach(([x, z]) => {
+                        const p = new T.Mesh(pillarGeo, pillarMat);
+                        p.position.set(x, 3, z);
+                        p.castShadow = true;
+                        p.receiveShadow = true;
+                        scene.add(p);
+                        const cap = new T.Mesh(capGeo, capMat);
+                        cap.position.set(x, 6.05, z);
+                        scene.add(cap);
+                        OBSTACLES.push({ x: x, z: z, r: 1.75 });
+                    });
+
+                    /* trees */
+                    const trunkGeo = new T.CylinderGeometry(0.22, 0.32, 1.7, 7);
+                    const trunkMat = new T.MeshStandardMaterial({ color: P.trunk, roughness: 0.95 });
+                    const leafGeoA = new T.ConeGeometry(1.35, 2.5, 9);
+                    const leafGeoB = new T.ConeGeometry(0.95, 1.9, 9);
+                    const leafMatA = new T.MeshStandardMaterial({ color: P.leafA, roughness: 0.8 });
+                    const leafMatB = new T.MeshStandardMaterial({ color: P.leafB, roughness: 0.8 });
+                    [[-38, -8], [-30, 30], [-12, 34], [8, 30], [34, -30], [40, 6], [-42, 18],
+                    [22, -38], [-24, -16], [14, 8], [-8, 18], [36, -10], [-36, -36], [6, -12],
+                    [26, 40], [-18, -42], [44, 32], [-46, -24]].forEach(([x, z]) => {
+                        const g = new T.Group();
+                        const tr = new T.Mesh(trunkGeo, trunkMat);
+                        tr.position.y = 0.85;
+                        tr.castShadow = true;
+                        const l1 = new T.Mesh(leafGeoA, leafMatA);
+                        l1.position.y = 2.5;
+                        l1.castShadow = true;
+                        const l2 = new T.Mesh(leafGeoB, leafMatB);
+                        l2.position.y = 3.7;
+                        l2.castShadow = true;
+                        g.add(tr, l1, l2);
+                        g.position.set(x, 0, z);
+                        g.rotation.y = Math.random() * 3.14;
+                        scene.add(g);
+                        OBSTACLES.push({ x: x, z: z, r: 0.95 });
+                    });
+
+                    /* crates */
+                    const crateGeo = new T.BoxGeometry(1.7, 1.7, 1.7);
+                    const crateMat = new T.MeshStandardMaterial({ color: P.crate, roughness: 0.85 });
+                    const crateMat2 = new T.MeshStandardMaterial({ color: P.crate2, roughness: 0.85 });
+                    [[18, 34, 2], [20.6, 35.4, 1], [-34, 4, 2], [-31.6, 2.6, 1], [10, -28, 1],
+                    [12.4, -26.6, 2], [-4, 44, 1], [30, 12, 2], [32.4, 10.6, 1],
+                    [-20, -8, 1], [42, -20, 2], [-44, 38, 1]].forEach(([x, z, stack]) => {
+                        for (let i = 0; i < stack; i++) {
+                            const c = new T.Mesh(crateGeo, i ? crateMat2 : crateMat);
+                            c.position.set(x, 0.85 + i * 1.72, z);
+                            c.rotation.y = (Math.random() - 0.5) * 0.5;
+                            c.castShadow = true;
+                            c.receiveShadow = true;
+                            scene.add(c);
+                        }
+                        OBSTACLES.push({ x: x, z: z, r: 1.25 });
+                    });
+
+                    /* glowing strips along the base of each wall */
+                    const stripMatA = new T.MeshBasicMaterial({ color: P.stripA });
+                    const stripMatB = new T.MeshBasicMaterial({ color: P.stripB });
+                    [[0, -ARENA + 0.8, 0, stripMatA], [0, ARENA - 0.8, 0, stripMatA],
+                    [-ARENA + 0.8, 0, Math.PI / 2, stripMatB], [ARENA - 0.8, 0, Math.PI / 2, stripMatB]]
+                        .forEach(([x, z, ry, mat]) => {
+                            const st = new T.Mesh(new T.BoxGeometry(ARENA * 2 - 4, 0.1, 0.34), mat);
+                            st.position.set(x, 0.06, z);
+                            st.rotation.y = ry;
+                            scene.add(st);
+                        });
+
+                    /* a plaza ring where the car spawns */
+                    const ring = new T.Mesh(
+                        new T.RingGeometry(8.4, 9.6, 56),
+                        new T.MeshBasicMaterial({ color: P.ring, transparent: true, opacity: 0.5, side: T.DoubleSide }));
+                    ring.rotation.x = -Math.PI / 2;
+                    ring.position.y = 0.03;
+                    scene.add(ring);
+
+                    /* distant skyline so the horizon isn't empty (decor only, no collision) */
+                    const skylineMat = P.skyline.map(c =>
+                        new T.MeshStandardMaterial({ color: c, roughness: 0.9 }));
+                    for (let i = 0; i < 46; i++) {
+                        const ang = (i / 46) * Math.PI * 2 + Math.random() * 0.06;
+                        const rad = 76 + Math.random() * 46;
+                        const hgt = 7 + Math.random() * 34;
+                        const wid = 5 + Math.random() * 9;
+                        const b = new T.Mesh(
+                            new T.BoxGeometry(wid, hgt, wid),
+                            skylineMat[i % 3]);
+                        b.position.set(Math.cos(ang) * rad, hgt / 2, Math.sin(ang) * rad);
+                        b.rotation.y = Math.random() * 1.5;
+                        scene.add(b);
+                    }
+
+                    /* ── the car ── */
+                    const car = new T.Group();
+                    const carMat = new T.MeshStandardMaterial({ color: P.car, roughness: 0.4, metalness: 0.2 });
+                    const bodyMesh = new T.Mesh(new T.BoxGeometry(1.8, 0.55, 3.2), carMat);
+                    bodyMesh.position.y = 0.66;
+                    bodyMesh.castShadow = true;
+                    car.add(bodyMesh);
+
+                    const cabinMat = new T.MeshStandardMaterial({ color: P.cabin, roughness: 0.2, metalness: 0.5 });
+                    const cabin = new T.Mesh(new T.BoxGeometry(1.35, 0.52, 1.5), cabinMat);
+                    cabin.position.set(0, 1.16, -0.2);
+                    cabin.castShadow = true;
+                    car.add(cabin);
+
+                    const lightMat = new T.MeshStandardMaterial({ color: 0xFFF4C4, emissive: 0xFFE9A0, emissiveIntensity: 0.9 });
+                    [-0.6, 0.6].forEach(x => {
+                        const l = new T.Mesh(new T.BoxGeometry(0.34, 0.16, 0.1), lightMat);
+                        l.position.set(x, 0.68, 1.62);
+                        car.add(l);
+                    });
+
+                    const wheelGeo = new T.CylinderGeometry(0.44, 0.44, 0.36, 18);
+                    wheelGeo.rotateZ(Math.PI / 2);
+                    const wheelMat = new T.MeshStandardMaterial({ color: 0x12141E, roughness: 0.85 });
+                    const wheels = [];
+                    [[-0.98, 1.08], [0.98, 1.08], [-0.98, -1.12], [0.98, -1.12]].forEach(([x, z], i) => {
+                        const w = new T.Mesh(wheelGeo, wheelMat);
+                        w.position.set(x, 0.44, z);
+                        w.castShadow = true;
+                        w.userData.front = i < 2;
+                        car.add(w);
+                        wheels.push(w);
+                    });
+                    scene.add(car);
+
+                    /* ── collectible cubes ── */
+                    const TOTAL = 14;
+                    const FACE_COLORS = [0xCC0000, 0xFF6B35, 0xFFFFFF, 0xFFD700, 0x00AA44, 0x0055FF];
+                    const cubeMats = FACE_COLORS.map(c => new T.MeshStandardMaterial({ color: c, roughness: 0.35 }));
+                    const cubeGeo = new T.BoxGeometry(1.15, 1.15, 1.15);
+                    let pickups = [];
+
+                    function scatter() {
+                        pickups.forEach(p => scene.remove(p.mesh));
+                        pickups = [];
+                        for (let i = 0; i < TOTAL; i++) {
+                            let x, z, tries = 0, clear;
+                            do {
+                                x = (Math.random() * 2 - 1) * (ARENA - 8);
+                                z = (Math.random() * 2 - 1) * (ARENA - 8);
+                                tries++;
+                                clear = Math.hypot(x, z) >= 10 &&
+                                    !OBSTACLES.some(o => Math.hypot(x - o.x, z - o.z) < o.r + 2.6);
+                            } while (tries < 40 && !clear);
+                            const m = new T.Mesh(cubeGeo, cubeMats);
+                            m.castShadow = true;
+                            m.position.set(x, groundAt(x, z) + 1.25, z);
+                            scene.add(m);
+                            pickups.push({ mesh: m, got: false, phase: Math.random() * 6.28 });
+                        }
+                    }
+
+                    /* ── sparkle burst on pickup ── */
+                    const bits = [];
+                    const bitGeo = new T.BoxGeometry(0.26, 0.26, 0.26);
+                    function burst(at) {
+                        for (let i = 0; i < 10; i++) {
+                            const m = new T.Mesh(bitGeo, cubeMats[i % 6]);
+                            m.position.copy(at);
+                            scene.add(m);
+                            bits.push({
+                                mesh: m, life: 0,
+                                v: new T.Vector3((Math.random() - 0.5) * 9, Math.random() * 7 + 3, (Math.random() - 0.5) * 9)
+                            });
+                        }
+                    }
+
+                    /* ── state ── */
+                    const LIMIT = 75;
+                    let pos, yaw, speed, vy, grounded, got, left, running, finished, startedRun;
+
+                    function reset() {
+                        pos = new T.Vector3(0, 0, 0);
+                        yaw = 0;
+                        speed = 0;
+                        vy = 0;
+                        grounded = true;
+                        got = 0;
+                        left = LIMIT;
+                        running = false;
+                        finished = false;
+                        startedRun = false;
+                        bits.forEach(b => scene.remove(b.mesh));
+                        bits.length = 0;
+                        scatter();
+                        cubeVal.textContent = '0 / ' + TOTAL;
+                        timeVal.textContent = LIMIT.toFixed(1);
+                        over.innerHTML = '';
+                        over.append(
+                            el('h3', null, '🏎️ Cube Rally'),
+                            el('p', null, 'Collect all ' + TOTAL + ' cubes in ' + LIMIT + ' seconds. Hit the ramps.'),
+                            (() => {
+                                const b = el('button', 'btn primary', 'Drive');
+                                b.onclick = begin;
+                                return b;
+                            })()
+                        );
+                        over.hidden = false;
+                        car.position.set(0, 0, 0);
+                        car.rotation.set(0, 0, 0);
+                    }
+
+                    function begin() {
+                        if (finished) return;
+                        over.hidden = true;
+                        running = true;
+                        startedRun = true;
+                    }
+
+                    function finish(won) {
+                        running = false;
+                        finished = true;
+                        const used = (LIMIT - left);
+                        if (won) {
+                            const prev = store.get('rally_best', null);
+                            const t = Math.round(used * 10) / 10;
+                            if (prev === null || t < prev) {
+                                store.set('rally_best', t);
+                                best.set(t + 's');
+                            }
+                        }
+                        over.innerHTML = '';
+                        const btn = el('button', 'btn primary', 'Race again');
+                        btn.onclick = () => { reset(); };
+                        over.append(
+                            el('h3', null, won ? 'All cubes collected! 🎉' : "Time's up"),
+                            el('p', null, won
+                                ? 'Cleared in ' + used.toFixed(1) + 's.'
+                                : 'You found ' + got + ' of ' + TOTAL + ' cubes.'),
+                            btn
+                        );
+                        over.hidden = false;
+                    }
+
+                    /* ── input ── */
+                    const input = { gas: 0, brake: 0, left: 0, right: 0, hand: 0 };
+                    const KEYMAP = {
+                        ArrowUp: 'gas', w: 'gas', W: 'gas',
+                        ArrowDown: 'brake', s: 'brake', S: 'brake',
+                        ArrowLeft: 'left', a: 'left', A: 'left',
+                        ArrowRight: 'right', d: 'right', D: 'right',
+                        ' ': 'hand'
+                    };
+                    const down = e => {
+                        const k = KEYMAP[e.key];
+                        if (k) {
+                            e.preventDefault();
+                            input[k] = 1;
+                            if (!startedRun && !finished) begin();
+                        } else if (e.key === 'r' || e.key === 'R') {
+                            pos.set(0, 0, 0);
+                            yaw = 0;
+                            speed = 0;
+                            vy = 0;
+                        }
+                    };
+                    const up = e => {
+                        const k = KEYMAP[e.key];
+                        if (k) {
+                            e.preventDefault();
+                            input[k] = 0;
+                        }
+                    };
+                    window.addEventListener('keydown', down);
+                    window.addEventListener('keyup', up);
+                    cleanup.push(() => {
+                        window.removeEventListener('keydown', down);
+                        window.removeEventListener('keyup', up);
+                    });
+
+                    pad.querySelectorAll('button').forEach(b => {
+                        const k = b.dataset.k;
+                        const on = e => {
+                            e.preventDefault();
+                            input[k] = 1;
+                            if (!startedRun && !finished) begin();
+                        };
+                        const off = e => {
+                            e.preventDefault();
+                            input[k] = 0;
+                        };
+                        b.addEventListener('pointerdown', on);
+                        b.addEventListener('pointerup', off);
+                        b.addEventListener('pointerleave', off);
+                        b.addEventListener('pointercancel', off);
+                    });
+
+                    restart.disabled = false;
+                    restart.onclick = () => { finished = false; reset(); };
+
+                    /* ── loop ── */
+                    const MAXF = 26, MAXR = -9, ACC = 20, BRK = 30, DRAG = 0.78, TURN = 2.0, G = 26;
+                    const fwd = new T.Vector3();
+                    const camAim = new T.Vector3();
+                    const camWant = new T.Vector3();
+                    let raf, last = 0;
+
+                    function frame(t) {
+                        raf = requestAnimationFrame(frame);
+                        if (!last) last = t;
+                        let dt = (t - last) / 1000;
+                        last = t;
+                        if (dt > 0.05) dt = 0.05;
+
+                        if (running) {
+                            left -= dt;
+                            if (left <= 0) {
+                                left = 0;
+                                finish(false);
+                            }
+                            timeVal.textContent = left.toFixed(1);
+                        }
+
+                        if (running) {
+                            if (input.gas) speed += ACC * dt;
+                            if (input.brake) speed -= BRK * dt;
+                            if (input.hand) speed *= Math.pow(0.02, dt);
+                            if (!input.gas && !input.brake) speed *= Math.pow(DRAG, dt);
+                            speed = Math.max(MAXR, Math.min(MAXF, speed));
+
+                            const grip = Math.min(1, Math.abs(speed) / 7);
+                            const dir = speed >= 0 ? 1 : -1;
+                            if (input.left) yaw += TURN * dt * grip * dir;
+                            if (input.right) yaw -= TURN * dt * grip * dir;
+
+                            fwd.set(Math.sin(yaw), 0, Math.cos(yaw));
+                            pos.x += fwd.x * speed * dt;
+                            pos.z += fwd.z * speed * dt;
+
+                            const lim = ARENA - 2.2;
+                            if (Math.abs(pos.x) > lim) {
+                                pos.x = Math.sign(pos.x) * lim;
+                                speed *= -0.25;
+                            }
+                            if (Math.abs(pos.z) > lim) {
+                                pos.z = Math.sign(pos.z) * lim;
+                                speed *= -0.25;
+                            }
+
+                            /* push out of anything solid, and bounce if we drove into it */
+                            for (let i = 0; i < OBSTACLES.length; i++) {
+                                const o = OBSTACLES[i];
+                                const dx = pos.x - o.x, dz = pos.z - o.z;
+                                const dist = Math.hypot(dx, dz);
+                                const minD = o.r + 1.35;
+                                if (dist >= minD) continue;
+                                if (dist < 0.0001) {
+                                    pos.x += minD;
+                                    continue;
+                                }
+                                const nx = dx / dist, nz = dz / dist;
+                                pos.x = o.x + nx * minD;
+                                pos.z = o.z + nz * minD;
+                                /* velocity is fwd * speed — only bounce when it points inward */
+                                if ((fwd.x * nx + fwd.z * nz) * speed < 0) speed *= -0.3;
+                                else speed *= 0.7;
+                            }
+
+                            const gh = groundAt(pos.x, pos.z);
+                            if (grounded) {
+                                if (gh < pos.y - 0.12) {
+                                    grounded = false;
+                                    vy = Math.max(vy, Math.abs(speed) * 0.16);
+                                } else {
+                                    pos.y = gh;
+                                }
+                            }
+                            if (!grounded) {
+                                vy -= G * dt;
+                                pos.y += vy * dt;
+                                if (pos.y <= gh) {
+                                    pos.y = gh;
+                                    vy = 0;
+                                    grounded = true;
+                                }
+                            }
+                        }
+
+                        car.position.copy(pos);
+                        car.rotation.y = yaw;
+
+                        /* lean into the slope */
+                        const ahead = groundAt(pos.x + fwd.x * 1.6, pos.z + fwd.z * 1.6);
+                        const behind = groundAt(pos.x - fwd.x * 1.6, pos.z - fwd.z * 1.6);
+                        const pitch = grounded ? -Math.atan2(ahead - behind, 3.2) : Math.max(-0.5, Math.min(0.5, -vy * 0.03));
+                        car.rotation.x += (pitch - car.rotation.x) * Math.min(1, dt * 8);
+
+                        wheels.forEach(w => {
+                            w.rotation.x += speed * dt / 0.44;
+                            if (w.userData.front) {
+                                const steer = (input.left ? 0.4 : 0) - (input.right ? 0.4 : 0);
+                                w.rotation.y += (steer - w.rotation.y) * Math.min(1, dt * 10);
+                            }
+                        });
+
+                        speedVal.textContent = Math.round(Math.abs(speed) * 3.6);
+
+                        /* cubes */
+                        pickups.forEach(p => {
+                            if (p.got) return;
+                            p.phase += dt * 2.2;
+                            p.mesh.rotation.y += dt * 1.4;
+                            p.mesh.rotation.x += dt * 0.7;
+                            p.mesh.position.y = groundAt(p.mesh.position.x, p.mesh.position.z) + 1.25 + Math.sin(p.phase) * 0.22;
+                            if (running && Math.hypot(p.mesh.position.x - pos.x, p.mesh.position.z - pos.z) < 2.1
+                                && Math.abs(p.mesh.position.y - pos.y) < 3) {
+                                p.got = true;
+                                scene.remove(p.mesh);
+                                burst(p.mesh.position);
+                                got++;
+                                cubeVal.textContent = got + ' / ' + TOTAL;
+                                if (got >= TOTAL) finish(true);
+                            }
+                        });
+
+                        for (let i = bits.length - 1; i >= 0; i--) {
+                            const b = bits[i];
+                            b.life += dt;
+                            b.v.y -= G * dt;
+                            b.mesh.position.addScaledVector(b.v, dt);
+                            b.mesh.rotation.x += dt * 6;
+                            b.mesh.rotation.y += dt * 5;
+                            const k = Math.max(0, 1 - b.life / 0.9);
+                            b.mesh.scale.setScalar(k);
+                            if (b.life > 0.9) {
+                                scene.remove(b.mesh);
+                                bits.splice(i, 1);
+                            }
+                        }
+
+                        /* chase cam */
+                        fwd.set(Math.sin(yaw), 0, Math.cos(yaw));
+                        camWant.copy(pos).addScaledVector(fwd, -10.5);
+                        camWant.y = pos.y + 5.0;
+                        camera.position.lerp(camWant, 1 - Math.pow(0.0001, dt));
+                        camAim.copy(pos).addScaledVector(fwd, 6);
+                        camAim.y = pos.y + 1.3;
+                        camera.lookAt(camAim);
+
+                        sun.target.position.copy(pos);
+                        sun.position.set(pos.x + 34, 48, pos.z + 22);
+
+                        renderer.render(scene, camera);
+                    }
+
+                    /* repaint the world in place when the theme flips — no race restart */
+                    function repaintWorld() {
+                        P = PAL[currentTheme()];
+                        scene.background.setHex(P.bg);
+                        scene.fog.color.setHex(P.fog);
+                        hemi.color.setHex(P.hemiSky);
+                        hemi.groundColor.setHex(P.hemiGround);
+                        hemi.intensity = P.hemi;
+                        sun.intensity = P.sun;
+                        if (skyMat.map) skyMat.map.dispose();
+                        skyMat.map = skyTex();
+                        skyMat.needsUpdate = true;
+                        if (groundMat.map) groundMat.map.dispose();
+                        groundMat.map = gridTex();
+                        groundMat.needsUpdate = true;
+                        wallMat.color.setHex(P.wall);
+                        rampMat.color.setHex(P.ramp);
+                        pillarMat.color.setHex(P.pillar);
+                        capMat.color.setHex(P.cap);
+                        trunkMat.color.setHex(P.trunk);
+                        leafMatA.color.setHex(P.leafA);
+                        leafMatB.color.setHex(P.leafB);
+                        crateMat.color.setHex(P.crate);
+                        crateMat2.color.setHex(P.crate2);
+                        stripMatA.color.setHex(P.stripA);
+                        stripMatB.color.setHex(P.stripB);
+                        ring.material.color.setHex(P.ring);
+                        carMat.color.setHex(P.car);
+                        cabinMat.color.setHex(P.cabin);
+                        skylineMat.forEach((m, i) => m.color.setHex(P.skyline[i]));
+                    }
+                    window.addEventListener('nk-theme', repaintWorld);
+                    cleanup.push(() => window.removeEventListener('nk-theme', repaintWorld));
+
+                    reset();
+                    raf = requestAnimationFrame(frame);
+
+                    cleanup.push(() => {
+                        cancelAnimationFrame(raf);
+                        scene.traverse(o => {
+                            if (o.geometry) o.geometry.dispose();
+                            if (o.material) {
+                                (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => {
+                                    if (m.map) m.map.dispose();
+                                    m.dispose();
+                                });
+                            }
+                        });
+                        renderer.dispose();
+                    });
+                }
+
+                return () => {
+                    killed = true;
+                    cleanup.forEach(f => f());
+                };
+            }
+
+            /* ════════════ ROUTER ════════════ */
+            const GAMES = { snake, g2048, memory, ttt, reaction, drive };
+            let teardown = null;
+
+            function load(name) {
+                if (name === 'drive' && !unlocked) name = 'snake';
+                if (typeof teardown === 'function') teardown();
+                teardown = null;
+                stage.innerHTML = '';
+                const fn = GAMES[name] || GAMES.snake;
+                teardown = fn();
+                tabs.forEach(t => t.setAttribute('aria-selected', String(t.dataset.game === name)));
+                try { history.replaceState(null, '', '#' + name); } catch (e) { /* file:// */ }
+            }
+
+            tabs.forEach(t => t.addEventListener('click', () => load(t.dataset.game)));
+
+            /* ════════════ THE SECRET ════════════ */
+            const secretTab = document.querySelector('.tab.secret');
+            const gameCount = document.getElementById('game-count');
+            let unlocked = store.get('unlocked', false);
+
+            function showUnlocked() {
+                secretTab.hidden = false;
+                if (gameCount) gameCount.textContent = 'six';
+            }
+            if (unlocked) showUnlocked();
+
+            function toast(title, sub) {
+                const t = el('div', 'toast');
+                t.append(el('span', null, title), el('span', 'k', sub));
+                document.body.appendChild(t);
+                void t.offsetWidth; /* flush layout so the transition actually runs */
+                t.classList.add('show');
+                setTimeout(() => {
+                    t.classList.remove('show');
+                    setTimeout(() => t.remove(), 700);
+                }, 4500);
+            }
+
+            function unlock(jump) {
+                const first = !unlocked;
+                unlocked = true;
+                store.set('unlocked', true);
+                showUnlocked();
+                if (first) toast('🏎️ Cube Rally unlocked', '↑↑↓↓←→←→BA');
+                if (jump) load('drive');
+            }
+
+            /* the Konami code, naturally */
+            const SEQ = ['arrowup', 'arrowup', 'arrowdown', 'arrowdown',
+                'arrowleft', 'arrowright', 'arrowleft', 'arrowright', 'b', 'a'];
+            let step = 0;
+            window.addEventListener('keydown', e => {
+                const k = (e.key || '').toLowerCase();
+                if (k === SEQ[step]) step++;
+                else step = (k === SEQ[0]) ? 1 : 0;
+                if (step === SEQ.length) {
+                    step = 0;
+                    unlock(true);
+                }
+            });
+
+            /* no keyboard on a phone — five quick taps on the badge does it too */
+            const badge = document.querySelector('.badge');
+            let taps = 0, tapAt = 0;
+            badge.addEventListener('click', () => {
+                const now = Date.now();
+                taps = (now - tapAt < 900) ? taps + 1 : 1;
+                tapAt = now;
+                if (taps >= 5) {
+                    taps = 0;
+                    unlock(true);
+                }
+            });
+
+            /* a #drive link must NOT unlock the secret — only the sequence does.
+               If it isn't unlocked yet, fall back to Snake. */
+            const initial = (location.hash || '').replace('#', '');
+            const allowed = GAMES[initial] && (initial !== 'drive' || unlocked);
+            load(allowed ? initial : 'snake');
+        })();
+    </script>
+</body>
+
+</html>
