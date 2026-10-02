@@ -2683,19 +2683,6 @@
                 }
             });
 
-            /* no keyboard on a phone — five quick taps on the badge does it too */
-            const badge = document.querySelector('.badge');
-            let taps = 0, tapAt = 0;
-            badge.addEventListener('click', () => {
-                const now = Date.now();
-                taps = (now - tapAt < 900) ? taps + 1 : 1;
-                tapAt = now;
-                if (taps >= 5) {
-                    taps = 0;
-                    unlock(true);
-                }
-            });
-
             /* a #drive link must NOT unlock the secret — only the sequence does.
                If it isn't unlocked yet, fall back to Snake. */
             const initial = (location.hash || '').replace('#', '');
