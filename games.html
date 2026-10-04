@@ -88,6 +88,11 @@
             --snake-r: 56;
             --snake-g: 189;
             --snake-b: 248;
+            --flap-bird: #FBBF24;
+            --flap-beak: #F97316;
+            --flap-pipe: #38BDF8;
+            --flap-pipe-lip: #0EA5E9;
+            --flap-ground: rgba(255, 255, 255, 0.12);
 
             --r-lg: 24px;
             --r-md: 18px;
@@ -160,6 +165,11 @@
             --snake-r: 29;
             --snake-g: 78;
             --snake-b: 216;
+            --flap-bird: #F59E0B;
+            --flap-beak: #C2410C;
+            --flap-pipe: #0369A1;
+            --flap-pipe-lip: #075985;
+            --flap-ground: rgba(11, 27, 46, 0.14);
         }
 
         * {
@@ -1109,7 +1119,7 @@
         <span class="badge"><i aria-hidden="true"></i> Contact form offline</span>
         <h1>Can't connect yet, <span class="grad-text">care for some games?</span></h1>
         <p class="sub">
-            The "say hello" form isn't wired up yet — so here are six games
+            The "say hello" form isn't wired up yet — so here are seven games
             instead, all built from scratch and playable right here. No downloads, no accounts,
             no loading screens.
         </p>
@@ -1122,6 +1132,7 @@
             <button class="tab" role="tab" data-game="memory" aria-selected="false">🧠 Memory</button>
             <button class="tab" role="tab" data-game="ttt" aria-selected="false">⭕ Tic-Tac-Toe</button>
             <button class="tab" role="tab" data-game="reaction" aria-selected="false">⚡ Reaction</button>
+            <button class="tab" role="tab" data-game="flappy" aria-selected="false">🐦 Flappy</button>
             <button class="tab featured" role="tab" data-game="drive" aria-selected="false">🏎️ Cube Rally</button>
         </div>
 
@@ -1872,7 +1883,246 @@
                 return () => cleanup.forEach(f => f());
             }
 
-            /* ════════════ SECRET: CUBE RALLY ════════════ */
+            /* ════════════ FLAPPY ════════════ */
+            function flappy() {
+                const cleanup = [];
+                const h = head('Flappy',
+                    'Click, tap or press Space to flap · thread the gaps · Enter restarts after a crash.');
+                const score = pill('Score', '0');
+                const best = pill('Best', store.get('flappy_best', 0));
+                const restart = el('button', 'btn', '↻ Restart');
+                h.slot.append(score.node, best.node, restart);
+
+                const area = el('div', 'play-area');
+                const wrapEl = el('div', 'board-wrap');
+                const canvas = el('canvas');
+                const over = el('div', 'overlay');
+                over.hidden = true;
+                wrapEl.append(canvas, over);
+                area.append(wrapEl);
+                stage.append(h.node, h.hint, area);
+
+                const ctx = canvas.getContext('2d');
+
+                /* everything below is in a 100x100 world, scaled to the canvas */
+                const W = 100, GROUND = 92;
+                const BIRD_X = 28, BIRD_R = 3.4;
+                const GAP = 27, PW = 13, SPACING = 46;
+                const GRAV = 190, FLAP = -64;
+
+                function fit() {
+                    const dpr = Math.min(window.devicePixelRatio, 2);
+                    const px = (canvas.clientWidth || 400) * dpr;
+                    canvas.width = px;
+                    canvas.height = px;
+                    const s = px / W;
+                    ctx.setTransform(s, 0, 0, s, 0, 0);
+                    draw();
+                }
+
+                let pal = {};
+                function readPal() {
+                    pal = {
+                        bird: cssVar('--flap-bird') || '#FBBF24',
+                        beak: cssVar('--flap-beak') || '#F97316',
+                        pipe: cssVar('--flap-pipe') || '#38BDF8',
+                        pipeLip: cssVar('--flap-pipe-lip') || '#0369A1',
+                        ground: cssVar('--flap-ground') || 'rgba(255,255,255,0.10)'
+                    };
+                }
+                readPal();
+                const onTheme = () => { readPal(); draw(); };
+                window.addEventListener('nk-theme', onTheme);
+                cleanup.push(() => window.removeEventListener('nk-theme', onTheme));
+
+                let birdY, vel, pipes, sc, dead, started, speed, travelled;
+
+                function reset() {
+                    birdY = 44;
+                    vel = 0;
+                    pipes = [];
+                    sc = 0;
+                    dead = false;
+                    started = false;
+                    speed = 36;
+                    travelled = 0;
+                    score.set(0);
+                    spawn(W + 10);
+                    ready();
+                    draw();
+                }
+
+                /* hold at a ready screen so it doesn't drop before you look up */
+                function ready() {
+                    over.innerHTML = '';
+                    const btn = el('button', 'btn primary', 'Start');
+                    btn.onclick = begin;
+                    over.append(
+                        el('h3', null, 'Ready?'),
+                        el('p', null, 'Click the board, tap, or press Space.'),
+                        btn
+                    );
+                    over.hidden = false;
+                }
+
+                function begin() {
+                    if (dead) return;
+                    started = true;
+                    vel = FLAP;
+                    over.hidden = true;
+                }
+
+                function flap() {
+                    if (dead) return;
+                    if (!started) return begin();
+                    vel = FLAP;
+                }
+
+                function spawn(atX) {
+                    const gapY = 10 + Math.random() * (GROUND - GAP - 20);
+                    pipes.push({ x: atX, gapY: gapY, scored: false });
+                }
+
+                function die() {
+                    dead = true;
+                    if (sc > store.get('flappy_best', 0)) {
+                        store.set('flappy_best', sc);
+                        best.set(sc);
+                    }
+                    over.innerHTML = '';
+                    const btn = el('button', 'btn primary', 'Play again');
+                    btn.onclick = reset;
+                    over.append(
+                        el('h3', null, sc > 0 ? 'Nice run' : 'Ouch'),
+                        el('p', null, 'You cleared ' + sc + (sc === 1 ? ' pipe.' : ' pipes.')),
+                        btn
+                    );
+                    over.hidden = false;
+                }
+
+                function step(dt) {
+                    vel += GRAV * dt;
+                    birdY += vel * dt;
+
+                    const dx = speed * dt;
+                    travelled += dx;
+                    for (const p of pipes) p.x -= dx;
+                    if (travelled >= SPACING) {
+                        travelled -= SPACING;
+                        spawn(W + PW);
+                    }
+                    pipes = pipes.filter(p => p.x + PW > -4);
+
+                    for (const p of pipes) {
+                        if (!p.scored && p.x + PW < BIRD_X - BIRD_R) {
+                            p.scored = true;
+                            sc++;
+                            score.set(sc);
+                            speed = Math.min(58, 36 + sc * 0.8);
+                        }
+                    }
+
+                    if (birdY + BIRD_R >= GROUND || birdY - BIRD_R <= 0) return die();
+                    for (const p of pipes) {
+                        if (BIRD_X + BIRD_R > p.x && BIRD_X - BIRD_R < p.x + PW &&
+                            (birdY - BIRD_R < p.gapY || birdY + BIRD_R > p.gapY + GAP)) {
+                            return die();
+                        }
+                    }
+                }
+
+                function rr(x, y, w, hh, r, fill) {
+                    ctx.fillStyle = fill;
+                    ctx.beginPath();
+                    if (ctx.roundRect) ctx.roundRect(x, y, w, hh, r);
+                    else ctx.rect(x, y, w, hh);
+                    ctx.fill();
+                }
+
+                function draw() {
+                    ctx.clearRect(0, 0, W, W);
+
+                    for (const p of pipes) {
+                        /* top pipe, then bottom, each with a fatter lip */
+                        rr(p.x, 0, PW, p.gapY, 1.5, pal.pipe);
+                        rr(p.x - 1, p.gapY - 3.4, PW + 2, 3.4, 1.2, pal.pipeLip);
+                        const by = p.gapY + GAP;
+                        rr(p.x, by, PW, GROUND - by, 1.5, pal.pipe);
+                        rr(p.x - 1, by, PW + 2, 3.4, 1.2, pal.pipeLip);
+                    }
+
+                    rr(0, GROUND, W, W - GROUND, 0, pal.ground);
+
+                    ctx.save();
+                    ctx.translate(BIRD_X, birdY);
+                    ctx.rotate(Math.max(-0.5, Math.min(1.15, vel / 95)));
+                    ctx.fillStyle = pal.bird;
+                    ctx.beginPath();
+                    ctx.arc(0, 0, BIRD_R, 0, 6.2832);
+                    ctx.fill();
+                    ctx.fillStyle = 'rgba(0,0,0,0.16)';
+                    ctx.beginPath();
+                    ctx.ellipse(-0.7, 0.6, 2, 1.25, -0.3, 0, 6.2832);
+                    ctx.fill();
+                    ctx.fillStyle = pal.beak;
+                    ctx.beginPath();
+                    ctx.moveTo(BIRD_R - 0.4, -0.2);
+                    ctx.lineTo(BIRD_R + 2.3, 0.5);
+                    ctx.lineTo(BIRD_R - 0.4, 1.4);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.beginPath();
+                    ctx.arc(1.3, -1.1, 1.15, 0, 6.2832);
+                    ctx.fill();
+                    ctx.fillStyle = '#10151F';
+                    ctx.beginPath();
+                    ctx.arc(1.7, -1.1, 0.55, 0, 6.2832);
+                    ctx.fill();
+                    ctx.restore();
+                }
+
+                let raf, last = 0;
+                function loop(t) {
+                    raf = requestAnimationFrame(loop);
+                    if (!last) last = t;
+                    let dt = (t - last) / 1000;
+                    last = t;
+                    if (dt > 0.05) dt = 0.05;
+                    if (started && !dead) step(dt);
+                    draw();
+                }
+
+                const onKey = e => {
+                    if (e.key === ' ' || e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
+                        e.preventDefault();
+                        flap();
+                    } else if (e.key === 'Enter' && dead) {
+                        reset();
+                    }
+                };
+                window.addEventListener('keydown', onKey);
+                cleanup.push(() => window.removeEventListener('keydown', onKey));
+
+                canvas.addEventListener('pointerdown', e => {
+                    e.preventDefault();
+                    flap();
+                });
+                restart.onclick = reset;
+
+                const ro = new ResizeObserver(fit);
+                ro.observe(canvas);
+                cleanup.push(() => ro.disconnect());
+
+                reset();
+                fit();
+                raf = requestAnimationFrame(loop);
+                cleanup.push(() => cancelAnimationFrame(raf));
+
+                return () => cleanup.forEach(f => f());
+            }
+
+            /* ════════════ CUBE RALLY ════════════ */
             let threeLoader = null;
             function loadThree() {
                 if (window.THREE) return Promise.resolve();
@@ -2626,7 +2876,7 @@
             }
 
             /* ════════════ ROUTER ════════════ */
-            const GAMES = { snake, g2048, memory, ttt, reaction, drive };
+            const GAMES = { snake, g2048, memory, ttt, reaction, flappy, drive };
             let teardown = null;
 
             function load(name) {
